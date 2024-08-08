@@ -10,10 +10,10 @@ import java.io.Serializable;
 public class SampleRequest extends BaseRequest implements Serializable {
     String distributedDataset;
     String replace;
-    Double percentage;
-    Long randomSeed;
+    Float percentage;
+    int randomSeed;
 
-    public SampleRequest(String distributedDataset, String replace, Double percentage, Long randomSeed) {
+    public SampleRequest(String distributedDataset, String replace, Float percentage, int randomSeed) {
         this.distributedDataset = distributedDataset;
         this.replace = replace;
         this.percentage = percentage;

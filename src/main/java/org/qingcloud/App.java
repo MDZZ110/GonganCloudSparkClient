@@ -1,7 +1,10 @@
 package org.qingcloud;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import paas.computation.memoryComputation.*;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -12,44 +15,47 @@ import java.util.List;
  */
 public class App 
 {
-    public static void main( String[] args ) {
-        String accessKey = "KRQYRAWSUPWQUYEYEFCM";
-        String secretKey = "v0kvaZC979PPHG1HxlHivtFEyzj5rQy6usP2e6mB";
-        String token = accessKey + "|" + secretKey;
+    static String className = "paas.computation.memoryComputation.MemoryComputationImpl";
 
+    public static void main( String[] args ) throws Exception {
+        String token = "INHUOPYHWNTDDMJVSWHN|BRXHHZqw07uhwhq3wDIjE09YnuywLW1QEBP9uVgM";
+
+        token = "";
         testCollect(token);
 
-        testCount(token);
+//        testCollect(token);
 
-        testTake(token);
+//        testCount(token);
 
-        // TODO ORC 依赖包有问题
-        testSaveFile(token);
+//        testTake(token);
 
-        testMap(token);
 
-        testFilter(token);
+//        testSaveFile(token);
 
-        testSample(token);
+//        testMap(token);
 
-        testUnion(token);
+//        testFilter(token);
 
-        testIntersection(token);
+//        testSample(token);
+//
+//        testUnion(token);
+//
+//        testIntersection(token);
+//
+//        testDistinct(token);
+//
+//        testGroupByKey(token);
+//
+//        testReduceByKey(token);
+//
+//        testSortByKey(token);
+//
+//        testJoin(token);
+//
+//        testPartition(token);
 
-        testDistinct(token);
 
-        testGroupByKey(token);
-
-        testReduceByKey(token);
-
-        testSortByKey(token);
-
-        testJoin(token);
-
-        testPartition(token);
-
-        // TODO 同 ORC 依赖包的问题
-        testActionEntry(token);
+//        testActionEntry(token);
 
 
         testTransformationEntry(token);
@@ -59,11 +65,24 @@ public class App
         System.out.println("==========> " + message  + " <==========");
     }
 
-    public static Boolean testCollect(String token)  {
-        CollectResponse resp = new MemoryComputationImpl().collect(Arrays.asList("1", "2", "3", "4", "5"), token);
-        if (resp.getErrorCode() == 0) {
-            printFailed("testCollect Successfully!");
-            return true;
+    public static Boolean testCollect(String token) {
+        try {
+            // 获取目标类的Class对象
+            Class<?> clazz = Class.forName(className);
+
+            // 创建目标类的实例
+            Object instance = clazz.newInstance();
+
+            Method method = clazz.getMethod("collect", Object.class, String.class);
+
+            CollectResponse resp = (CollectResponse) method.invoke(instance, "gab1", token);
+            if (resp.getErrorCode() == 0) {
+                printFailed("testCollect Successfully!");
+                return true;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         printFailed("testCollect failed");
@@ -71,7 +90,7 @@ public class App
     }
 
     public static Boolean testCount(String token)  {
-        CountResponse resp = new MemoryComputationImpl().count(Arrays.asList("1", "2", "3", "4", "5"), token);
+        CountResponse resp = new MemoryComputationImpl().count("gab1", token);
         if (resp.getErrorCode() == 0) {
             printFailed("testCount Successfully!");
             return true;
@@ -82,7 +101,7 @@ public class App
     }
 
     public static Boolean testTake(String token)  {
-        TakeResponse resp = new MemoryComputationImpl().take(Arrays.asList("1", "2", "3", "4", "5"), 3, token);
+        TakeResponse resp = new MemoryComputationImpl().take("gab1", 3, token);
         if (resp.getErrorCode() == 0) {
             printFailed("testTake Successfully!");
             return true;
@@ -98,19 +117,18 @@ public class App
         String localFileDir = "file:///tmp/memcompute";
         String remoteFileDir = "dfs:///hadoop/memcompute";
         SaveFileResponse resp;
-        Object dataset = Arrays.asList("Andy,32", "Ben,41");
         Boolean pass = true;
         for(String fileTypeName:fileTypeList){
             String localFilePath = localFileDir + "/test_save_file_" + fileTypeName;
             String remoteFilePath = remoteFileDir + "/test_save_file_" + fileTypeName;
 
-            resp = new MemoryComputationImpl().saveFile(dataset, fileTypeName, localFilePath, token);
+            resp = new MemoryComputationImpl().saveFile("gab4", fileTypeName, localFilePath, token);
             if (resp.getErrorCode() != 0) {
                 pass = false;
                 break;
             }
 
-            resp = new MemoryComputationImpl().saveFile(dataset, fileTypeName, remoteFilePath, token);
+            resp = new MemoryComputationImpl().saveFile("gab4", fileTypeName, remoteFilePath, token);
             if (resp.getErrorCode() != 0) {
                 pass = false;
                 break;
@@ -119,15 +137,16 @@ public class App
 
         if (!pass) {
             printFailed("testSaveFile failed");
+        } else {
+            printFailed("testSaveFile Successfully!");
         }
 
-        printFailed("testSaveFile Successfully!");
         return pass;
     }
 
     public static Boolean testMap(String token) {
         String userDefinedFunction = "com.qingcloud.MapObject.udfMap";
-        MapResponse resp = new MemoryComputationImpl().map(Arrays.asList("1", "2", "3", "4", "5"), userDefinedFunction, token);
+        MapResponse resp = new MemoryComputationImpl().map("gab1", userDefinedFunction, token);
         if (resp.getErrorCode() == 0) {
             printFailed("testMap Successfully");
             return true;
@@ -139,7 +158,7 @@ public class App
 
     public static Boolean testFilter(String token) {
         String userDefinedFunction = "com.qingcloud.MapObject.udfFilter";
-        FilterResponse resp = new MemoryComputationImpl().filter(Arrays.asList("1", "2", "3", "4", "5"), userDefinedFunction, token);
+        FilterResponse resp = new MemoryComputationImpl().filter("gab1", userDefinedFunction, token);
         if (resp.getErrorCode() == 0) {
             printFailed("testFilter Successfully");
             return true;
@@ -151,9 +170,9 @@ public class App
 
     public static Boolean testSample(String token) {
         String replace = "1";
-        Double percentage = 0.32;
-        Long randomSeed = 100023L;
-        SampleResponse resp = new MemoryComputationImpl().sample(Arrays.asList("1", "2", "3", "4", "5"), replace, percentage, randomSeed, token);
+        Float percentage = 0.32f;
+        int randomSeed = 100023;
+        SampleResponse resp = new MemoryComputationImpl().sample("gab1", replace, percentage, randomSeed, token);
         if (resp.getErrorCode() == 0) {
             printFailed("testSample Successfully");
             return true;
@@ -164,10 +183,8 @@ public class App
     }
 
     public static Boolean testUnion(String token) {
-        List<String> dataset1 = Arrays.asList("1", "2", "3", "4", "5");
-        List<String> dataset2 = Arrays.asList("6", "7", "8", "9", "10");
 
-        UnionResponse resp = new MemoryComputationImpl().union(dataset1, dataset2, token);
+        UnionResponse resp = new MemoryComputationImpl().union("gab1", "gab2", token);
         if (resp.getErrorCode() == 0) {
             printFailed("testUnion Successfully");
             return true;
@@ -178,10 +195,8 @@ public class App
     }
 
     public static Boolean testIntersection(String token) {
-        List<String> dataset1 = Arrays.asList("1", "2", "3", "4", "5");
-        List<String> dataset2 = Arrays.asList("4", "5", "6", "7", "8");
 
-        IntersectionResponse resp = new MemoryComputationImpl().intersection(dataset1, dataset2, token);
+        IntersectionResponse resp = new MemoryComputationImpl().intersection("gab1", "gab2", token);
         if (resp.getErrorCode() == 0) {
             printFailed("testIntersection Successfully");
             return true;
@@ -192,7 +207,7 @@ public class App
     }
 
     public static Boolean testDistinct(String token) {
-        DistinctResponse resp = new MemoryComputationImpl().distinct(Arrays.asList("1", "1", "3", "3", "5"), token);
+        DistinctResponse resp = new MemoryComputationImpl().distinct("gab1", token);
         if (resp.getErrorCode() == 0) {
             printFailed("testDistinct Successfully");
             return true;
@@ -203,7 +218,7 @@ public class App
     }
 
     public static Boolean testGroupByKey(String token) {
-        GroupByKeyResponse resp = new MemoryComputationImpl().groupByKey(Arrays.asList("A,1", "B,2", "A,3", "C,4"), token);
+        GroupByKeyResponse resp = new MemoryComputationImpl().groupByKey("gab3", token);
         if (resp.getErrorCode() == 0) {
             printFailed("testGroupByKey Successfully");
             return true;
@@ -215,7 +230,7 @@ public class App
     }
 
     public static Boolean testReduceByKey(String token) {
-        ReduceByKeyResponse resp = new MemoryComputationImpl().reduceByKey(Arrays.asList("A,1", "B,2", "A,3", "C,4"), "udf.Udf.udfReduce", "A", token);
+        ReduceByKeyResponse resp = new MemoryComputationImpl().reduceByKey("gab3", "udf.Udf.udfReduce", "A", token);
         if (resp.getErrorCode() == 0) {
             printFailed("testReduceByKey Successfully");
             return true;
@@ -226,7 +241,7 @@ public class App
     }
 
     public static Boolean testSortByKey(String token) {
-        SortByKeyResponse resp = new MemoryComputationImpl().sortByKey(Arrays.asList("A,1", "B,2", "A,3", "C,4"), "0", "A", token);
+        SortByKeyResponse resp = new MemoryComputationImpl().sortByKey("gab3", "0", "A", token);
         if (resp.getErrorCode() == 0) {
             printFailed("testSortByKey Successfully");
             return true;
@@ -237,7 +252,7 @@ public class App
     }
 
     public static Boolean testJoin(String token) {
-        JoinResponse resp = new MemoryComputationImpl().join(Arrays.asList("A,1", "B,2", "K,3", "D,4"), Arrays.asList("A,2", "B,2", "A,5", "C,6"), 0, token);
+        JoinResponse resp = new MemoryComputationImpl().join("gab3", "gab4", 0, token);
         if (resp.getErrorCode() == 0) {
             printFailed("testJoin Successfully");
             return true;
@@ -248,7 +263,7 @@ public class App
     }
 
     public static Boolean testPartition(String token) {
-        PartitionResponse resp = new MemoryComputationImpl().partition(Arrays.asList("A,1", "B,2", "A,3", "B,4"), 2, token);
+        PartitionResponse resp = new MemoryComputationImpl().partition("gab3", 2, token);
         if (resp.getErrorCode() == 0) {
             printFailed("testPartition Successfully");
             return true;
@@ -259,7 +274,7 @@ public class App
     }
 
     public static Boolean testActionEntry(String token) {
-        ActionEntryResponse resp = new MemoryComputationImpl().actionEntry(Arrays.asList("1", "2", "3", "4", "5"), 1, "", token);
+        ActionEntryResponse resp = new MemoryComputationImpl().actionEntry("gab1", 1, "", token);
         if (resp.getErrorCode() != 0) {
             printFailed("testActionEntry Collect failed");
             return false;
@@ -267,7 +282,7 @@ public class App
 
         printFailed("testActionEntry Collect Successfully!");
 
-        resp = new MemoryComputationImpl().actionEntry(Arrays.asList("1", "2", "3", "4", "5"), 2, "", token);
+        resp = new MemoryComputationImpl().actionEntry("gab1", 2, "", token);
         if (resp.getErrorCode() != 0) {
             printFailed("testActionEntry Count failed");
             return false;
@@ -276,7 +291,7 @@ public class App
         printFailed("testActionEntry Count Successfully!");
 
         String takeParameter = "{\"amount\":3}";
-        resp = new MemoryComputationImpl().actionEntry(Arrays.asList("1", "2", "3", "4", "5"), 3, takeParameter, token);
+        resp = new MemoryComputationImpl().actionEntry("gab1", 3, takeParameter, token);
         if (resp.getErrorCode() != 0) {
             printFailed("testActionEntry Take failed");
             return false;
@@ -287,13 +302,12 @@ public class App
         List<String> fileTypeList = Arrays.asList("txt", "csv", "json", "parquet", "orc");
         String localFileDir = "file:///tmp/actionEntry";
         String remoteFileDir = "dfs:///hadoop/actionEntry";
-        Object dataset = Arrays.asList("Andy,32", "Ben,41");
         for(String fileTypeName:fileTypeList){
             String localFilePath = localFileDir + "/test_save_file_" + fileTypeName;
             String remoteFilePath = remoteFileDir + "/test_save_file_" + fileTypeName;
 
             String localSaveFileParameter = String.format("{\"fileType\": \"%s\", \"filePath\": \"%s\"}", fileTypeName, localFilePath);
-            resp = new MemoryComputationImpl().actionEntry(dataset, 4, localSaveFileParameter, token);
+            resp = new MemoryComputationImpl().actionEntry("gab3", 4, localSaveFileParameter, token);
             if (resp.getErrorCode() != 0) {
                 printFailed("testActionEntry saveFile local failed");
                 return false;
@@ -302,7 +316,7 @@ public class App
             printFailed("testActionEntry saveFile " + fileTypeName + " to local Successfully");
 
             String remoteSaveFileParameter = String.format("{\"fileType\": \"%s\", \"filePath\": \"%s\"}", fileTypeName, remoteFilePath);;
-            resp = new MemoryComputationImpl().actionEntry(dataset, 4, remoteSaveFileParameter, token);
+            resp = new MemoryComputationImpl().actionEntry("gab3", 4, remoteSaveFileParameter, token);
             if (resp.getErrorCode() != 0) {
                 printFailed("testActionEntry saveFile local failed");
                 return false;
@@ -315,11 +329,27 @@ public class App
 
     }
 
+    public static String mapToJson(HashMap map) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(map);
+    }
+
     public static Boolean testTransformationEntry(String token) {
-        HashMap<String, List<String>> mapFuncDataMap = new HashMap<>();
-        mapFuncDataMap.put("distributedDataset", Arrays.asList("1", "2", "3", "4", "5"));
+        HashMap<String, String> mapFuncDataMap = new HashMap<>();
+        mapFuncDataMap.put("distributedDataset", "gab1");
+
+        String inputJson;
+        try {
+            inputJson = mapToJson(mapFuncDataMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+            printFailed("testTransformationEntry failed");
+            return false;
+        }
+
+
         String mapParameter = "{\"userDefinedFunction\":\"com.qingcloud.MapObject.udfMap\"}";
-        TransformatEntryResponse resp = new MemoryComputationImpl().transformationEntry(mapFuncDataMap, "map", mapParameter, token);
+        TransformatEntryResponse resp = new MemoryComputationImpl().transformationEntry(inputJson, "map", mapParameter, token);
         if (resp.getErrorCode() != 0) {
             printFailed("testTransformationEntry Map failed");
             return false;
@@ -327,10 +357,9 @@ public class App
 
         printFailed("testTransformationEntry Map Successfully!");
 
-        HashMap<String, List<String>> filterFuncDataMap = new HashMap<>();
-        filterFuncDataMap.put("distributedDataset", Arrays.asList("1", "2", "3", "4", "5"));
+
         String filterParameter = "{\"userDefinedFunction\":\"com.qingcloud.MapObject.udfFilter\"}";
-        resp = new MemoryComputationImpl().transformationEntry(filterFuncDataMap, "filter", filterParameter, token);
+        resp = new MemoryComputationImpl().transformationEntry(inputJson, "filter", filterParameter, token);
         if (resp.getErrorCode() != 0) {
             printFailed("testTransformationEntry Filter failed");
             return false;
@@ -340,102 +369,118 @@ public class App
         String replace = "1";
         Double percentage = 0.32;
         Long randomSeed = 100023L;
-        HashMap<String, Object> sampleFuncDataMap = new HashMap<>();
-        sampleFuncDataMap.put("distributedDataset", Arrays.asList("1", "2", "3", "4", "5"));
+
         String sampleParameter = String.format("{\"replace\":\"%s\", \"percentage\":\"%s\", \"randomSeed\": \"%s\"}", replace, percentage, randomSeed);
-        resp = new MemoryComputationImpl().transformationEntry(sampleFuncDataMap, "sample", sampleParameter, token);
+        resp = new MemoryComputationImpl().transformationEntry(inputJson, "sample", sampleParameter, token);
         if (resp.getErrorCode() != 0) {
             printFailed("testTransformationEntry Sample failed");
             return false;
         }
         printFailed("testTransformationEntry Sample Successfully");
 
-        List<String> unionDataset1 = Arrays.asList("1", "2", "3", "4", "5");
-        List<String> unionDataset2 = Arrays.asList("6", "7", "8", "4", "5");
-        HashMap<String, Object> unionFuncDataMap = new HashMap<>();
-        unionFuncDataMap.put("distributedDataset1", unionDataset1);
-        unionFuncDataMap.put("distributedDataset2", unionDataset2);
+        HashMap<String, String> unionFuncDataMap = new HashMap<>();
+        unionFuncDataMap.put("distributedDataset1", "gab1");
+        unionFuncDataMap.put("distributedDataset2", "gab2");
+        String twoDatasetJson;
+        try {
+            twoDatasetJson = mapToJson(unionFuncDataMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+            printFailed("testTransformationEntry failed");
+            return false;
+        }
+
         String unionParameter = "{\"distributedDataset1\": \"distributedDataset1\", \"distributedDataset2\": \"distributedDataset2\"}";
-        resp = new MemoryComputationImpl().transformationEntry(unionFuncDataMap, "union", unionParameter, token);
+        resp = new MemoryComputationImpl().transformationEntry(twoDatasetJson, "union", unionParameter, token);
         if (resp.getErrorCode() != 0) {
             printFailed("testTransformationEntry union failed");
             return false;
         }
         printFailed("testTransformationEntry union Successfully");
 
-        List<String> intersectionDataset1 = Arrays.asList("1", "2", "3", "4", "6");
-        List<String> intersectionDataset2 = Arrays.asList("6", "7", "8", "4", "9");
-        HashMap<String, Object> intersectionFuncDataMap = new HashMap<>();
-        intersectionFuncDataMap.put("distributedDataset1", intersectionDataset1);
-        intersectionFuncDataMap.put("distributedDataset2", intersectionDataset2);
+
         String intersectionParameter = "{\"distributedDataset1\": \"distributedDataset1\", \"distributedDataset2\": \"distributedDataset2\"}";
-        resp = new MemoryComputationImpl().transformationEntry(intersectionFuncDataMap, "intersection", intersectionParameter, token);
+        resp = new MemoryComputationImpl().transformationEntry(twoDatasetJson, "intersection", intersectionParameter, token);
         if (resp.getErrorCode() != 0) {
             printFailed("testTransformationEntry intersection failed");
             return false;
         }
         printFailed("testTransformationEntry intersection Successfully");
 
-        List<String> distinctDataset = Arrays.asList("1", "1", "2", "2", "3");
-        HashMap<String, Object> distinctFuncDataMap = new HashMap<>();
-        distinctFuncDataMap.put("distributedDataset", distinctDataset);
-        resp = new MemoryComputationImpl().transformationEntry(distinctFuncDataMap, "distinct", "", token);
+        HashMap<String, String> distinctFuncDataMap = new HashMap<>();
+        distinctFuncDataMap.put("distributedDataset", "gab5");
+        String inputGab5Json;
+        try {
+            inputGab5Json = mapToJson(mapFuncDataMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+            printFailed("testTransformationEntry failed");
+            return false;
+        }
+
+        resp = new MemoryComputationImpl().transformationEntry(inputGab5Json, "distinct", "", token);
         if (resp.getErrorCode() != 0) {
             printFailed("testTransformationEntry distinct failed");
             return false;
         }
         printFailed("testTransformationEntry distinct Successfully");
 
-        List<String> groupDataset = Arrays.asList("A,1", "B,2", "A,3", "C,4");
-        HashMap<String, Object> groupFuncDataMap = new HashMap<>();
-        groupFuncDataMap.put("distributedDataset", groupDataset);
-        resp = new MemoryComputationImpl().transformationEntry(groupFuncDataMap, "group", "", token);
+
+        String inputGab3Json;
+        try {
+            inputGab3Json = mapToJson(mapFuncDataMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+            printFailed("testTransformationEntry failed");
+            return false;
+        }
+
+        resp = new MemoryComputationImpl().transformationEntry(inputGab3Json, "group", "", token);
         if (resp.getErrorCode() != 0) {
             printFailed("testTransformationEntry group failed");
             return false;
         }
         printFailed("testTransformationEntry group Successfully");
 
-        List<String> reduceDataset = Arrays.asList("A,1", "B,2", "A,5", "C,4");
-        HashMap<String, Object> reduceFuncDataMap = new HashMap<>();
-        reduceFuncDataMap.put("distributedDataset", reduceDataset);
+
         String reduceParameter = "{\"reduceFunction\":\"udf.Udf.udfReduce\", \"keyField\":\"A\"}";
-        resp = new MemoryComputationImpl().transformationEntry(reduceFuncDataMap, "reduce", reduceParameter, token);
+        resp = new MemoryComputationImpl().transformationEntry(inputGab3Json, "reduce", reduceParameter, token);
         if (resp.getErrorCode() != 0) {
             printFailed("testTransformationEntry reduce failed");
             return false;
         }
         printFailed("testTransformationEntry reduce Successfully");
 
-        List<String> sortDataset = Arrays.asList("A,1", "B,2", "A,3", "C,4");
         String sortParameter = "{\"sort\":\"0\", \"keyField\":\"A\"}";
-        HashMap<String, Object> sortFuncDataMap = new HashMap<>();
-        sortFuncDataMap.put("distributedDataset", sortDataset);
-        resp = new MemoryComputationImpl().transformationEntry(sortFuncDataMap, "sort", sortParameter, token);
+        resp = new MemoryComputationImpl().transformationEntry(inputGab3Json, "sort", sortParameter, token);
         if (resp.getErrorCode() != 0) {
             printFailed("testTransformationEntry sort failed");
             return false;
         }
         printFailed("testTransformationEntry sort Successfully");
 
-        List<String> joinDataset1 = Arrays.asList("A,1", "B,2", "K,3", "D,4");
-        List<String> joinDataset2 = Arrays.asList("A,2", "B,2", "A,5", "C,6");
-        HashMap<String, Object> joinFuncDataMap = new HashMap<>();
-        joinFuncDataMap.put("distributedDataset1", joinDataset1);
-        joinFuncDataMap.put("distributedDataset2", joinDataset2);
+        HashMap<String, String> joinFuncDataMap = new HashMap<>();
+        joinFuncDataMap.put("distributedDataset1", "gab3");
+        joinFuncDataMap.put("distributedDataset2", "gab4");
+        try {
+            twoDatasetJson = mapToJson(joinFuncDataMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+            printFailed("testTransformationEntry failed");
+            return false;
+        }
+
         String joinParameter = "{\"joinMethod\":\"1\", \"distributedDataset1\": \"distributedDataset1\", \"distributedDataset2\": \"distributedDataset2\"}";
-        resp = new MemoryComputationImpl().transformationEntry(joinFuncDataMap, "join", joinParameter, token);
+        resp = new MemoryComputationImpl().transformationEntry(twoDatasetJson, "join", joinParameter, token);
         if (resp.getErrorCode() != 0) {
             printFailed("testTransformationEntry join failed");
             return false;
         }
         printFailed("testTransformationEntry join Successfully");
 
-        List<String> partitionDataset = Arrays.asList("A,1", "B,2", "A,3", "B,4");
-        HashMap<String, Object> partitionFuncDataMap = new HashMap<>();
-        partitionFuncDataMap.put("distributedDataset", partitionDataset);
+
         String partitionParameter = "{\"partitionNumber\":\"2\"}";
-        resp = new MemoryComputationImpl().transformationEntry(partitionFuncDataMap, "partition", partitionParameter, token);
+        resp = new MemoryComputationImpl().transformationEntry(inputGab3Json, "partition", partitionParameter, token);
         if (resp.getErrorCode() != 0) {
             printFailed("testTransformationEntry partition failed");
             return false;

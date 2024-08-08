@@ -1,7 +1,8 @@
-package paas.computation.memoryComputation;
+package paas.common.response;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import paas.computation.memoryComputation.ErrorCodeEnum;
 
 /**
  * Created by chenzheng on 2021/2/1.

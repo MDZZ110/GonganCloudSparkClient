@@ -1,5 +1,7 @@
 package paas.computation.memoryComputation;
 
+import paas.common.response.Response;
+
 /**
  * Created by chenzheng on 2021/2/1.
  */

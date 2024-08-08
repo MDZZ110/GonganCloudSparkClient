@@ -1,5 +1,7 @@
 package paas.computation.memoryComputation;
 
+import paas.common.response.*;
+
 /**
  * Created by chenzheng on 2021/1/31.
  */
@@ -26,7 +28,7 @@ public interface MemoryComputation {
 
     public FilterResponse filter(Object distributedDataset, String userDefinedFunction, String accessToken);
 
-    public SampleResponse sample(Object distributedDataset, String replace, Double percentage, Long randomSeed, String accessToken);
+    public SampleResponse sample(Object distributedDataset, String replace, Float percentage, int randomSeed, String accessToken);
 
     public UnionResponse union(Object distributedDataset1, Object distributedDataset2, String accessToken);
 

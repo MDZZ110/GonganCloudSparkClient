@@ -2,6 +2,7 @@ package paas.computation.memoryComputation;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import paas.common.response.Response;
 
 import java.io.IOException;
 import java.util.List;
@@ -11,11 +12,11 @@ import java.util.List;
  */
 public class CollectResponse extends Response {
     @JsonProperty("result")
-    private List<String> result;
+    private List<Integer> result;
 
     public CollectResponse() {}
 
-    public CollectResponse(int taskStatus, List<String> result, int errorCode, String errorMsg){
+    public CollectResponse(int taskStatus, List<Integer> result, int errorCode, String errorMsg){
         super(taskStatus, errorCode, errorMsg);
         this.result = result;
     }
@@ -25,7 +26,7 @@ public class CollectResponse extends Response {
         return  mapper.readValue(json, CollectResponse.class);
     }
 
-    public static CollectResponse getResponse(ErrorCodeEnum errorCodeEnum, List<String> result){
+    public static CollectResponse getResponse(ErrorCodeEnum errorCodeEnum, List<Integer> result){
         if(errorCodeEnum == ErrorCodeEnum.SUCCESS){
             return new CollectResponse(
                     Response.TASK_STATUS_SUCCESS,
@@ -43,7 +44,7 @@ public class CollectResponse extends Response {
         );
     }
 
-    public List<String> getResult() {
+    public List<Integer> getResult() {
         return result;
     }
 

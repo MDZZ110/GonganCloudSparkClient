@@ -6,6 +6,7 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import paas.common.response.*;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -24,7 +25,7 @@ public class MemoryComputationImpl implements MemoryComputation{
                 .writeTimeout(300, TimeUnit.SECONDS)
                 .build();
         MediaType typeJson = MediaType.parse("application/json; charset=utf-8");
-        String url = "http://157.208.10.52:8079/" + apiPath;
+        String url = "http://157.208.10.52:7379/" + apiPath;
         RequestBody body = RequestBody.create(typeJson, contentJson);
         Request request = new Request.Builder().url(url).post(body).build();
         okhttp3.Response response = httpClient.newCall(request).execute();
@@ -86,7 +87,6 @@ public class MemoryComputationImpl implements MemoryComputation{
             String parameterList,
             String accessToken){
 
-        Map dataMap = (Map) distributedDataset;
 
         final String TRANS_METHOD_MAP = "map";
         final String TRANS_METHOD_FILTER = "filter";
@@ -130,37 +130,37 @@ public class MemoryComputationImpl implements MemoryComputation{
 
         switch(function){
             case TRANS_METHOD_MAP:
-                result = this.transMap(dataMap, parameterList, accessToken);
+                result = this.transMap(distributedDataset, parameterList, accessToken);
                 break;
             case TRANS_METHOD_FILTER:
-                result = this.transFilter(dataMap, parameterList, accessToken);
+                result = this.transFilter(distributedDataset, parameterList, accessToken);
                 break;
             case TRANS_METHOD_SAMPLE:
-                result = this.transSample(dataMap, parameterList, accessToken);
+                result = this.transSample(distributedDataset, parameterList, accessToken);
                 break;
             case TRANS_METHOD_UNION:
-                result = this.transUnion(dataMap, accessToken);
+                result = this.transUnion(distributedDataset, parameterList, accessToken);
                 break;
             case TRANS_METHOD_INTERSECTION:
-                result = this.transIntersection(dataMap, accessToken);
+                result = this.transIntersection(distributedDataset, parameterList, accessToken);
                 break;
             case TRANS_METHOD_DISTINCT:
-                result = this.transDistinct(dataMap, accessToken);
+                result = this.transDistinct(distributedDataset, parameterList, accessToken);
                 break;
             case TRANS_METHOD_GROUP:
-                result = this.transGroupByKey(dataMap, accessToken);
+                result = this.transGroupByKey(distributedDataset, parameterList, accessToken);
                 break;
             case TRANS_METHOD_REDUCE:
-                result = this.transReduceByKey(dataMap, parameterList, accessToken);
+                result = this.transReduceByKey(distributedDataset, parameterList, accessToken);
                 break;
             case TRANS_METHOD_SORT:
-                result = this.transSortByKey(dataMap, parameterList, accessToken);
+                result = this.transSortByKey(distributedDataset, parameterList, accessToken);
                 break;
             case TRANS_METHOD_JOIN:
-                result = this.transJoin(dataMap, parameterList, accessToken);
+                result = this.transJoin(distributedDataset, parameterList, accessToken);
                 break;
             case TRANS_METHOD_PARTITION:
-                result = this.transPartition(dataMap, parameterList, accessToken);
+                result = this.transPartition(distributedDataset, parameterList, accessToken);
                 break;
         }
 
@@ -179,17 +179,12 @@ public class MemoryComputationImpl implements MemoryComputation{
 
     @Override
     public CollectResponse collect(Object distributedDataset, String accessToken){
-        if (!(distributedDataset instanceof List)){
-            return CollectResponse.getResponse(ErrorCodeEnum.DATA_TYPE_NOT_SUPPORTED, null);
-        }
-
         if(!CommonUtil.validateUserIdentity(accessToken)){
             return CollectResponse.getResponse(ErrorCodeEnum.PERMISSION_DENIED, null);
         }
 
         try {
-            String dataJavaRddJson = CommonUtil.convertListToString((List<String>) distributedDataset);
-            String submitRequestJson = new SubmitRequest(dataJavaRddJson).toJson();
+            String submitRequestJson = new SubmitRequest((String) distributedDataset).toJson();
             String result = sendRequest("/action/collect", submitRequestJson);
             return CollectResponse.convertJsonToResponse(result);
         } catch (Exception e){
@@ -200,17 +195,12 @@ public class MemoryComputationImpl implements MemoryComputation{
 
     @Override
     public CountResponse count(Object distributedDataset, String accessToken){
-        if (!(distributedDataset instanceof List)){
-            return CountResponse.getResponse(ErrorCodeEnum.DATA_TYPE_NOT_SUPPORTED, 0);
-        }
-
         if(!CommonUtil.validateUserIdentity(accessToken)){
             return CountResponse.getResponse(ErrorCodeEnum.PERMISSION_DENIED, 0);
         }
 
         try {
-            String dataJavaRddJson = CommonUtil.convertListToString((List<String>) distributedDataset);
-            String submitRequestJson = new SubmitRequest(dataJavaRddJson).toJson();
+            String submitRequestJson = new SubmitRequest((String) distributedDataset).toJson();
             String result = sendRequest("/action/count", submitRequestJson);
             return CountResponse.convertJsonToResponse(result);
         } catch (Exception e){
@@ -231,17 +221,12 @@ public class MemoryComputationImpl implements MemoryComputation{
 
     @Override
     public TakeResponse take(Object distributedDataset, int amount, String accessToken){
-        if (!(distributedDataset instanceof List)){
-            return TakeResponse.getResponse(ErrorCodeEnum.DATA_TYPE_NOT_SUPPORTED, null);
-        }
-
         if(!CommonUtil.validateUserIdentity(accessToken)){
             return TakeResponse.getResponse(ErrorCodeEnum.PERMISSION_DENIED, null);
         }
 
         try {
-            String dataJavaRddJson = CommonUtil.convertListToString((List<String>) distributedDataset);
-            String requestJson = new TakeRequest(dataJavaRddJson, amount).toJson();
+            String requestJson = new TakeRequest((String) distributedDataset, amount).toJson();
             String result = sendRequest("/action/take", requestJson);
             return TakeResponse.convertJsonToResponse(result);
         } catch (Exception e){
@@ -290,8 +275,7 @@ public class MemoryComputationImpl implements MemoryComputation{
         }
 
         try{
-            String dataJavaRddJson = CommonUtil.convertListToString((List<String>) distributedDataset);
-            String requestJson = new SaveFileRequest(dataJavaRddJson, fileType, filePath).toJson();
+            String requestJson = new SaveFileRequest((String)distributedDataset, fileType, filePath).toJson();
             String result = sendRequest("/action/saveFile", requestJson);
             return SaveFileResponse.convertJsonToResponse(result);
         }catch (Exception e){
@@ -324,7 +308,7 @@ public class MemoryComputationImpl implements MemoryComputation{
             return ActionEntryResponse.getResponse(ErrorCodeEnum.INVALID_INPUT_PARAMS_LENGTH, null);
         }
 
-        paas.computation.memoryComputation.Response resp = this.saveFile(distributedDataset, fileType, filePath, accessToken);
+        Response resp = this.saveFile(distributedDataset, fileType, filePath, accessToken);
         return new ActionEntryResponse(
                 resp.getTaskStatus(),
                 distributedDataset,
@@ -359,14 +343,15 @@ public class MemoryComputationImpl implements MemoryComputation{
             return MapResponse.getResponse(ErrorCodeEnum.PERMISSION_DENIED, null);
         }
 
+        userDefinedFunction = "com.qingcloud.MapObject.udfMap";
+
         HashMap<String, String> udfInfoMap = CommonUtil.parseClassAndMethod(userDefinedFunction);
         if(udfInfoMap == null){
             return MapResponse.getResponse(ErrorCodeEnum.USER_DEFINED_FUNCTION_PATH_NOT_VALID, null);
         }
 
         try{
-            String dataJavaRddJson = CommonUtil.convertListToString((List<String>) distributedDataset);
-            String requestJson = new MapRequest(dataJavaRddJson, userDefinedFunction).toJson();
+            String requestJson = new MapRequest((String) distributedDataset, userDefinedFunction).toJson();
             String result = sendRequest("/transformation/map", requestJson);
             return MapResponse.convertJsonToResponse(result);
 
@@ -376,8 +361,7 @@ public class MemoryComputationImpl implements MemoryComputation{
         }
     }
 
-    private TransformatEntryResponse transMap(Map dataMap, String parameterList, String accessToken){
-        Object distributedDataset = dataMap.get("distributedDataset");
+    private TransformatEntryResponse transMap(Object distributedDataset, String parameterList, String accessToken){
         JSONObject paramJsonObject = JSON.parseObject(parameterList);
         if(null == paramJsonObject){
             return TransformatEntryResponse.getResponse(ErrorCodeEnum.PARAM_NOT_FOUND, null);
@@ -404,14 +388,15 @@ public class MemoryComputationImpl implements MemoryComputation{
             return FilterResponse.getResponse(ErrorCodeEnum.PERMISSION_DENIED, null);
         }
 
+        userDefinedFunction = "com.qingcloud.MapObject.udfFilter";
+
         HashMap<String, String> udfInfoMap = CommonUtil.parseClassAndMethod(userDefinedFunction);
         if(udfInfoMap == null){
             return FilterResponse.getResponse(ErrorCodeEnum.USER_DEFINED_FUNCTION_PATH_NOT_VALID, null);
         }
 
         try{
-            String dataJavaRddJson = CommonUtil.convertListToString((List<String>) distributedDataset);
-            String requestJson = new FilterRequest(dataJavaRddJson, userDefinedFunction).toJson();
+            String requestJson = new FilterRequest((String) distributedDataset, userDefinedFunction).toJson();
             String result = sendRequest("/transformation/filter", requestJson);
             return FilterResponse.convertJsonToResponse(result);
         }catch (Exception e){
@@ -420,8 +405,7 @@ public class MemoryComputationImpl implements MemoryComputation{
         }
     }
 
-    private TransformatEntryResponse transFilter(Map dataMap, String parameterList, String accessToken){
-        Object distributedDataset = dataMap.get("distributedDataset");
+    private TransformatEntryResponse transFilter(Object distributedDataset, String parameterList, String accessToken){
         JSONObject paramJsonObject = JSON.parseObject(parameterList);
         if(null == paramJsonObject){
             return TransformatEntryResponse.getResponse(ErrorCodeEnum.PARAM_NOT_FOUND, null);
@@ -444,7 +428,7 @@ public class MemoryComputationImpl implements MemoryComputation{
     }
 
     @Override
-    public SampleResponse sample(Object distributedDataset, String replace, Double percentage, Long randomSeed, String accessToken){
+    public SampleResponse sample(Object distributedDataset, String replace, Float percentage, int randomSeed, String accessToken){
         if(!CommonUtil.validateUserIdentity(accessToken)){
             return SampleResponse.getResponse(ErrorCodeEnum.PERMISSION_DENIED, null);
         }
@@ -453,13 +437,8 @@ public class MemoryComputationImpl implements MemoryComputation{
             return SampleResponse.getResponse(ErrorCodeEnum.INVALID_INPUT_PARAMS_LENGTH, null);
         }
 
-        if(!CommonUtil.validateDoubleType(percentage, 4, 2)){
-            return SampleResponse.getResponse(ErrorCodeEnum.INVALID_INPUT_PARAMS_LENGTH, null);
-        }
-
         try{
-            String dataJavaRddJson = CommonUtil.convertListToString((List<String>) distributedDataset);
-            String requestJson = new SampleRequest(dataJavaRddJson, replace, percentage, randomSeed).toJson();
+            String requestJson = new SampleRequest((String) distributedDataset, replace, percentage, randomSeed).toJson();
             String result = sendRequest("/transformation/sample", requestJson);
             return SampleResponse.convertJsonToResponse(result);
         }catch (Exception e){
@@ -468,17 +447,16 @@ public class MemoryComputationImpl implements MemoryComputation{
         }
     }
 
-    private TransformatEntryResponse transSample(Map dataMap, String parameterList, String accessToken){
-        Object distributedDataset = dataMap.get("distributedDataset");
+    private TransformatEntryResponse transSample(Object distributedDataset, String parameterList, String accessToken){
         JSONObject paramJsonObject = JSON.parseObject(parameterList);
         if(null == paramJsonObject){
             return TransformatEntryResponse.getResponse(ErrorCodeEnum.PARAM_NOT_FOUND, null);
         }
 
         String replace = paramJsonObject.getString("replace");
-        Double percentage = paramJsonObject.getDouble("percentage");
-        Long randomSeed = paramJsonObject.getLong("randomSeed");
-        if (null == replace || null == percentage || null == randomSeed || null == distributedDataset){
+        Float percentage = paramJsonObject.getFloat("percentage");
+        int randomSeed = paramJsonObject.getInteger("randomSeed");
+        if (null == replace || null == percentage || null == distributedDataset){
             return TransformatEntryResponse.getResponse(ErrorCodeEnum.PARAM_NOT_FOUND, null);
         }
 
@@ -498,9 +476,7 @@ public class MemoryComputationImpl implements MemoryComputation{
         }
 
         try{
-            String dataJavaRddJson1 = CommonUtil.convertListToString((List<String>) distributedDataset1);
-            String dataJavaRddJson2 = CommonUtil.convertListToString((List<String>) distributedDataset2);
-            String requestJson = new UnionRequest(dataJavaRddJson1, dataJavaRddJson2).toJson();
+            String requestJson = new UnionRequest((String) distributedDataset1, (String) distributedDataset2).toJson();
             String result = sendRequest("/transformation/union", requestJson);
             return UnionResponse.convertJsonToResponse(result);
         }catch (Exception e){
@@ -509,9 +485,14 @@ public class MemoryComputationImpl implements MemoryComputation{
         }
     }
 
-    private TransformatEntryResponse transUnion(Map dataMap, String accessToken){
-        Object distributedDataset1 = dataMap.get("distributedDataset1");
-        Object distributedDataset2 = dataMap.get("distributedDataset2");
+    private TransformatEntryResponse transUnion(Object distributedDataset, String parameterList, String accessToken){
+        JSONObject paramJsonObject = JSON.parseObject(parameterList);
+        if(null == paramJsonObject){
+            return TransformatEntryResponse.getResponse(ErrorCodeEnum.PARAM_NOT_FOUND, null);
+        }
+
+        Object distributedDataset1 = paramJsonObject.getString("distributedDataset1");
+        Object distributedDataset2 = paramJsonObject.getString("distributedDataset2");
         if(null == distributedDataset1 || null == distributedDataset2){
             return TransformatEntryResponse.getResponse(ErrorCodeEnum.PARAM_NOT_FOUND, null);
         }
@@ -532,9 +513,7 @@ public class MemoryComputationImpl implements MemoryComputation{
         }
 
         try{
-            String dataJavaRddJson1 = CommonUtil.convertListToString((List<String>) distributedDataset1);
-            String dataJavaRddJson2 = CommonUtil.convertListToString((List<String>) distributedDataset2);
-            String requestJson = new IntersectionRequest(dataJavaRddJson1, dataJavaRddJson2).toJson();
+            String requestJson = new IntersectionRequest((String) distributedDataset1, (String) distributedDataset2).toJson();
             String result = sendRequest("/transformation/intersection", requestJson);
             return IntersectionResponse.convertJsonToResponse(result);
         }catch (Exception e){
@@ -543,12 +522,14 @@ public class MemoryComputationImpl implements MemoryComputation{
         }
     }
 
-    private TransformatEntryResponse transIntersection(Map dataMap, String accessToken){
-        Object distributedDataset1 = dataMap.get("distributedDataset1");
-        Object distributedDataset2 = dataMap.get("distributedDataset2");
-        if(null == distributedDataset1 || null == distributedDataset2){
+    private TransformatEntryResponse transIntersection(Object distributedDataset, String parameterList, String accessToken){
+        JSONObject paramJsonObject = JSON.parseObject(parameterList);
+        if(null == paramJsonObject){
             return TransformatEntryResponse.getResponse(ErrorCodeEnum.PARAM_NOT_FOUND, null);
         }
+
+        Object distributedDataset1 = paramJsonObject.getString("distributedDataset1");
+        Object distributedDataset2 = paramJsonObject.getString("distributedDataset2");
 
         IntersectionResponse resp = this.intersection(distributedDataset1, distributedDataset2, accessToken);
         return new TransformatEntryResponse(
@@ -567,8 +548,7 @@ public class MemoryComputationImpl implements MemoryComputation{
         }
 
         try {
-            String dataJavaRddJson = CommonUtil.convertListToString((List<String>) distributedDataset);
-            String submitRequestJson = new SubmitRequest(dataJavaRddJson).toJson();
+            String submitRequestJson = new SubmitRequest((String) distributedDataset).toJson();
             String result = sendRequest("/transformation/distinct", submitRequestJson);
             return DistinctResponse.convertJsonToResponse(result);
         } catch (Exception e){
@@ -577,12 +557,7 @@ public class MemoryComputationImpl implements MemoryComputation{
         }
     }
 
-    private TransformatEntryResponse transDistinct(Map dataMap, String accessToken){
-        Object distributedDataset = dataMap.get("distributedDataset");
-        if(null == distributedDataset){
-            return TransformatEntryResponse.getResponse(ErrorCodeEnum.PARAM_NOT_FOUND, null);
-        }
-
+    private TransformatEntryResponse transDistinct(Object distributedDataset, String parameterList, String accessToken){
         DistinctResponse resp = this.distinct(distributedDataset, accessToken);
         return new TransformatEntryResponse(
                 resp.getTaskStatus(),
@@ -599,8 +574,7 @@ public class MemoryComputationImpl implements MemoryComputation{
         }
 
         try {
-            String dataJavaRddJson = CommonUtil.convertListToString((List<String>) distributedDataset);
-            String submitRequestJson = new SubmitRequest(dataJavaRddJson).toJson();
+            String submitRequestJson = new SubmitRequest((String) distributedDataset).toJson();
             String result = sendRequest("/transformation/groupByKey", submitRequestJson);
             return GroupByKeyResponse.convertJsonToResponse(result);
         } catch (Exception e){
@@ -609,12 +583,7 @@ public class MemoryComputationImpl implements MemoryComputation{
         }
     }
 
-    private TransformatEntryResponse transGroupByKey(Map dataMap, String accessToken){
-        Object distributedDataset = dataMap.get("distributedDataset");
-        if(null == distributedDataset){
-            return TransformatEntryResponse.getResponse(ErrorCodeEnum.PARAM_NOT_FOUND, null);
-        }
-
+    private TransformatEntryResponse transGroupByKey(Object distributedDataset, String parameterList, String accessToken){
         GroupByKeyResponse resp = this.groupByKey(distributedDataset, accessToken);
         return new TransformatEntryResponse(
                 resp.getTaskStatus(),
@@ -631,6 +600,8 @@ public class MemoryComputationImpl implements MemoryComputation{
             return ReduceByKeyResponse.getResponse(ErrorCodeEnum.PERMISSION_DENIED, null);
         }
 
+        reduceFunction = "udf.Udf.udfReduce";
+
         if(!CommonUtil.valiateStringType(reduceFunction, 0, 20)){
             return ReduceByKeyResponse.getResponse(ErrorCodeEnum.INVALID_INPUT_PARAMS_LENGTH, null);
         }
@@ -645,8 +616,7 @@ public class MemoryComputationImpl implements MemoryComputation{
         }
 
         try{
-            String dataJavaRddJson = CommonUtil.convertListToString((List<String>) distributedDataset);
-            String reduceRequestJson = new ReduceByKeyRequest(dataJavaRddJson, reduceFunction, keyField).toJson();
+            String reduceRequestJson = new ReduceByKeyRequest((String) distributedDataset, reduceFunction, keyField).toJson();
             String result = sendRequest("/transformation/reduceByKey", reduceRequestJson);
             return ReduceByKeyResponse.convertJsonToResponse(result);
         }catch (Exception e){
@@ -655,8 +625,7 @@ public class MemoryComputationImpl implements MemoryComputation{
     }
 
 
-    private TransformatEntryResponse transReduceByKey(Map dataMap, String parameterList, String accessToken){
-        Object distributedDataset = dataMap.get("distributedDataset");
+    private TransformatEntryResponse transReduceByKey(Object distributedDataset, String parameterList, String accessToken){
         JSONObject paramJsonObject = JSON.parseObject(parameterList);
         if(null == paramJsonObject){
             return TransformatEntryResponse.getResponse(ErrorCodeEnum.PARAM_NOT_FOUND, null);
@@ -693,8 +662,7 @@ public class MemoryComputationImpl implements MemoryComputation{
         }
 
         try{
-            String dataJavaRddJson = CommonUtil.convertListToString((List<String>) distributedDataset);
-            String sortRequestJson = new SortByKeyRequest(dataJavaRddJson, sort, keyField).toJson();
+            String sortRequestJson = new SortByKeyRequest((String) distributedDataset, sort, keyField).toJson();
             String result = sendRequest("/transformation/sortByKey", sortRequestJson);
             return SortByKeyResponse.convertJsonToResponse(result);
         }catch (Exception e){
@@ -702,8 +670,7 @@ public class MemoryComputationImpl implements MemoryComputation{
         }
     }
 
-    private TransformatEntryResponse transSortByKey(Map dataMap, String parameterList, String accessToken){
-        Object distributedDataset = dataMap.get("distributedDataset");
+    private TransformatEntryResponse transSortByKey(Object distributedDataset, String parameterList, String accessToken){
         JSONObject paramJsonObject = JSON.parseObject(parameterList);
         if(null == paramJsonObject){
             return TransformatEntryResponse.getResponse(ErrorCodeEnum.PARAM_NOT_FOUND, null);
@@ -745,9 +712,7 @@ public class MemoryComputationImpl implements MemoryComputation{
         }
 
         try{
-            String dataJavaRddJson1 = CommonUtil.convertListToString((List<String>) distributedDataset1);
-            String dataJavaRddJson2 = CommonUtil.convertListToString((List<String>) distributedDataset2);
-            String requestJson = new JoinRequest(dataJavaRddJson1, dataJavaRddJson2, joinMethod).toJson();
+            String requestJson = new JoinRequest((String) distributedDataset1, (String) distributedDataset2, joinMethod).toJson();
             String result = sendRequest("/transformation/join", requestJson);
             return JoinResponse.convertJsonToResponse(result);
         }catch (Exception e){
@@ -755,17 +720,14 @@ public class MemoryComputationImpl implements MemoryComputation{
         }
     }
 
-    private TransformatEntryResponse transJoin(Map dataMap, String parameterList, String accessToken){
-        Object distributedDataset1 = dataMap.get("distributedDataset1");
-        Object distributedDataset2 = dataMap.get("distributedDataset2");
-        if(null == distributedDataset1 || null == distributedDataset2){
-            return TransformatEntryResponse.getResponse(ErrorCodeEnum.PARAM_NOT_FOUND, null);
-        }
-
+    private TransformatEntryResponse transJoin(Object distributedDataset, String parameterList, String accessToken){
         JSONObject paramJsonObject = JSON.parseObject(parameterList);
         if(null == paramJsonObject){
             return TransformatEntryResponse.getResponse(ErrorCodeEnum.PARAM_NOT_FOUND, null);
         }
+
+        Object distributedDataset1 = paramJsonObject.getString("distributedDataset1");
+        Object distributedDataset2 = paramJsonObject.getString("distributedDataset2");
 
         Integer joinMethod = paramJsonObject.getInteger("joinMethod");
         if(null == joinMethod){
@@ -792,8 +754,7 @@ public class MemoryComputationImpl implements MemoryComputation{
         }
 
         try{
-            String dataJavaRddJson = CommonUtil.convertListToString((List<String>) distributedDataset);
-            String requestJson = new PartitionRequest(dataJavaRddJson, partitionNumber).toJson();
+            String requestJson = new PartitionRequest((String) distributedDataset, partitionNumber).toJson();
             String result = sendRequest("/transformation/partition", requestJson);
             return PartitionResponse.convertJsonToResponse(result);
         }catch (Exception e){
@@ -801,12 +762,7 @@ public class MemoryComputationImpl implements MemoryComputation{
         }
     }
 
-    private TransformatEntryResponse transPartition(Map dataMap, String parameterList, String accessToken){
-        Object distributedDataset = dataMap.get("distributedDataset");
-        if(null == distributedDataset){
-            return TransformatEntryResponse.getResponse(ErrorCodeEnum.PARAM_NOT_FOUND, null);
-        }
-
+    private TransformatEntryResponse transPartition(Object distributedDataset, String parameterList, String accessToken){
         JSONObject paramJsonObject = JSON.parseObject(parameterList);
         if(null == parameterList){
             return TransformatEntryResponse.getResponse(ErrorCodeEnum.PARAM_NOT_FOUND, null);

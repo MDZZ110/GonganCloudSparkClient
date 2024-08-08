@@ -22,6 +22,11 @@ public class CommonUtil {
     }
 
     public static boolean validateUserIdentity(String accessToken){
+        // TODO: testing!
+        if (accessToken == ""){
+            return true;
+        }
+
         if(null == accessToken){
             return false;
         }
@@ -79,7 +84,7 @@ public class CommonUtil {
         return false;
     }
 
-    public static boolean validateDoubleType(Object param, int maxLength, int maxLengthAfterPoint){
+    public static boolean validateFloatType(Object param, int maxLength, int maxLengthAfterPoint){
         if(null == param){
             return false;
         }

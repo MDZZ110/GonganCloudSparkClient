@@ -2,11 +2,12 @@ package paas.computation.memoryComputation;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import paas.common.response.Response;
 
 import java.io.IOException;
 import java.util.List;
 
-public class SampleResponse extends Response{
+public class SampleResponse extends Response {
     @JsonProperty("distributedDataset")
     private List<String> distributedDataset;
 

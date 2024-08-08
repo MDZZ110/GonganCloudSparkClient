@@ -1,9 +1,11 @@
 package paas.computation.memoryComputation;
 
+import paas.common.response.Response;
+
 /**
  * Created by chenzheng on 2021/1/31.
  */
-public class ActionEntryResponse extends Response{
+public class ActionEntryResponse extends Response {
     private Object distributedDataset;
 
     public ActionEntryResponse(int taskStatus, Object distributedDataset, int errorCode, String errorMsg){
