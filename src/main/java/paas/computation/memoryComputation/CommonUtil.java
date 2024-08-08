@@ -38,17 +38,17 @@ public class CommonUtil {
         String accessKey = splitTokenArray[0];
         String secretKey = splitTokenArray[1];
         EnvContext context = new EnvContext(accessKey, secretKey);
-        context.setProtocol("https");
-        context.setHost("api.qingcloud.com");
-        context.setPort("443");
-        context.setZone("pek3d");
-        context.setApiLang("zh-cn");
-
-//        context.setProtocol("http");
-//        context.setHost("api.gslnga.com");
-//        context.setPort("7777");
-//        context.setZone("gslnga1");
+//        context.setProtocol("https");
+//        context.setHost("api.qingcloud.com");
+//        context.setPort("443");
+//        context.setZone("pek3d");
 //        context.setApiLang("zh-cn");
+
+        context.setProtocol("http");
+        context.setHost("api.gslnga.com");
+        context.setPort("7777");
+        context.setZone("gslnga1");
+        context.setApiLang("zh-cn");
         TagService service = new TagService(context);
         TagService.DescribeTagsInput describeTagsInput = new TagService.DescribeTagsInput();
         try{

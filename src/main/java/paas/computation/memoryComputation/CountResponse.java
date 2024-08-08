@@ -1,5 +1,6 @@
 package paas.computation.memoryComputation;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -8,7 +9,10 @@ import java.io.IOException;
  * Created by chenzheng on 2021/2/5.
  */
 public class CountResponse extends Response {
+    @JsonProperty("totalNum")
     private int totalNum;
+
+    public CountResponse() {}
 
     public CountResponse(int taskStatus, int totalNum, int errorCode, String errorMsg){
         super(taskStatus, errorCode, errorMsg);

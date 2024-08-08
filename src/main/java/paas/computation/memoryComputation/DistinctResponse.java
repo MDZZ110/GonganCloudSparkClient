@@ -1,11 +1,15 @@
 package paas.computation.memoryComputation;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
 public class DistinctResponse extends Response {
+    @JsonProperty("distributedDataset")
     private Object distributedDataset;
+
+    public DistinctResponse() {}
 
     public DistinctResponse(int taskStatus, Object distributedDataset, int errorCode, String errorMsg){
         super(taskStatus, errorCode, errorMsg);

@@ -6,7 +6,6 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -20,12 +19,12 @@ import java.util.concurrent.TimeUnit;
 public class MemoryComputationImpl implements MemoryComputation{
     public String sendRequest(String apiPath, String contentJson) throws IOException {
         OkHttpClient httpClient = new OkHttpClient.Builder()
-                .connectTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
-                .writeTimeout(30, TimeUnit.SECONDS)
+                .connectTimeout(300, TimeUnit.SECONDS)
+                .readTimeout(300, TimeUnit.SECONDS)
+                .writeTimeout(300, TimeUnit.SECONDS)
                 .build();
         MediaType typeJson = MediaType.parse("application/json; charset=utf-8");
-        String url = "http://192.168.110.9:8079/" + apiPath;
+        String url = "http://157.208.10.52:8079/" + apiPath;
         RequestBody body = RequestBody.create(typeJson, contentJson);
         Request request = new Request.Builder().url(url).post(body).build();
         okhttp3.Response response = httpClient.newCall(request).execute();
@@ -290,7 +289,6 @@ public class MemoryComputationImpl implements MemoryComputation{
             filePath = "hdfs" + filePath.substring(3);
         }
 
-
         try{
             String dataJavaRddJson = CommonUtil.convertListToString((List<String>) distributedDataset);
             String requestJson = new SaveFileRequest(dataJavaRddJson, fileType, filePath).toJson();
@@ -417,6 +415,7 @@ public class MemoryComputationImpl implements MemoryComputation{
             String result = sendRequest("/transformation/filter", requestJson);
             return FilterResponse.convertJsonToResponse(result);
         }catch (Exception e){
+            e.printStackTrace();
             return FilterResponse.getResponse(ErrorCodeEnum.FAILED, null);
         }
     }
@@ -463,8 +462,8 @@ public class MemoryComputationImpl implements MemoryComputation{
             String requestJson = new SampleRequest(dataJavaRddJson, replace, percentage, randomSeed).toJson();
             String result = sendRequest("/transformation/sample", requestJson);
             return SampleResponse.convertJsonToResponse(result);
-
         }catch (Exception e){
+            e.printStackTrace();
             return SampleResponse.getResponse(ErrorCodeEnum.FAILED, null);
         }
     }
@@ -505,6 +504,7 @@ public class MemoryComputationImpl implements MemoryComputation{
             String result = sendRequest("/transformation/union", requestJson);
             return UnionResponse.convertJsonToResponse(result);
         }catch (Exception e){
+            e.printStackTrace();
             return UnionResponse.getResponse(ErrorCodeEnum.FAILED, null);
         }
     }
@@ -538,6 +538,7 @@ public class MemoryComputationImpl implements MemoryComputation{
             String result = sendRequest("/transformation/intersection", requestJson);
             return IntersectionResponse.convertJsonToResponse(result);
         }catch (Exception e){
+            e.printStackTrace();
             return IntersectionResponse.getResponse(ErrorCodeEnum.FAILED, null);
         }
     }

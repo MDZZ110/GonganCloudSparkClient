@@ -1,13 +1,18 @@
 package paas.computation.memoryComputation;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.util.List;
 
 public class SampleResponse extends Response{
-    private Object distributedDataset;
+    @JsonProperty("distributedDataset")
+    private List<String> distributedDataset;
 
-    public SampleResponse(int taskStatus, Object distributedDataset, int errorCode, String errorMsg){
+    public SampleResponse() {}
+
+    public SampleResponse(int taskStatus, List<String> distributedDataset, int errorCode, String errorMsg){
         super(taskStatus, errorCode, errorMsg);
         this.distributedDataset = distributedDataset;
     }
@@ -17,7 +22,7 @@ public class SampleResponse extends Response{
         return  mapper.readValue(json, SampleResponse.class);
     }
 
-    public static SampleResponse getResponse(ErrorCodeEnum errorCodeEnum, Object distributedDataset){
+    public static SampleResponse getResponse(ErrorCodeEnum errorCodeEnum, List<String> distributedDataset){
         if(errorCodeEnum == ErrorCodeEnum.SUCCESS){
             return new SampleResponse(
                     Response.TASK_STATUS_SUCCESS,
