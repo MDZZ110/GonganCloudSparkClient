@@ -9,11 +9,11 @@ import java.util.List;
 
 public class UnionResponse extends Response {
     @JsonProperty("distributedDataset")
-    private List<String> distributedDataset;
+    private String distributedDataset;
 
     public UnionResponse() {}
 
-    public UnionResponse(int taskStatus, List<String> distributedDataset, int errorCode, String errorMsg){
+    public UnionResponse(int taskStatus, String distributedDataset, int errorCode, String errorMsg){
         super(taskStatus, errorCode, errorMsg);
         this.distributedDataset = distributedDataset;
     }
@@ -23,7 +23,7 @@ public class UnionResponse extends Response {
         return  mapper.readValue(json, UnionResponse.class);
     }
 
-    public static UnionResponse getResponse(ErrorCodeEnum errorCodeEnum, List<String> distributedDataset){
+    public static UnionResponse getResponse(ErrorCodeEnum errorCodeEnum, String distributedDataset){
         if(errorCodeEnum == ErrorCodeEnum.SUCCESS){
             return new UnionResponse(
                     TASK_STATUS_SUCCESS,

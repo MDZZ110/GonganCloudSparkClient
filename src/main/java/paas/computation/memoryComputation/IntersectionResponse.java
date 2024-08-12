@@ -8,12 +8,12 @@ import java.io.IOException;
 import java.util.List;
 
 public class IntersectionResponse extends Response {
-    @JsonProperty("distributedDataset")
-    private List<String> distributedDataset;
+    @JsonProperty("localFileName")
+    private String distributedDataset;
 
     public IntersectionResponse() {}
 
-    public IntersectionResponse(int taskStatus, List<String> distributedDataset, int errorCode, String errorMsg){
+    public IntersectionResponse(int taskStatus, String distributedDataset, int errorCode, String errorMsg){
         super(taskStatus, errorCode, errorMsg);
         this.distributedDataset = distributedDataset;
     }
@@ -24,7 +24,7 @@ public class IntersectionResponse extends Response {
     }
 
 
-    public static IntersectionResponse getResponse(ErrorCodeEnum errorCodeEnum, List<String> distributedDataset){
+    public static IntersectionResponse getResponse(ErrorCodeEnum errorCodeEnum, String distributedDataset){
         if(errorCodeEnum == ErrorCodeEnum.SUCCESS){
             return new IntersectionResponse(
                     TASK_STATUS_SUCCESS,
