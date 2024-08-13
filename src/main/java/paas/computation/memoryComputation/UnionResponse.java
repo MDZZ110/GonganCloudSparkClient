@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import paas.common.response.Response;
 
 import java.io.IOException;
-import java.util.List;
 
 public class UnionResponse extends Response {
     @JsonProperty("distributedDataset")

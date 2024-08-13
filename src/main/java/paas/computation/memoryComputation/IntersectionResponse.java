@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class IntersectionResponse extends Response {
-    @JsonProperty("localFileName")
+    @JsonProperty("distributedDataset")
     private String distributedDataset;
 
     public IntersectionResponse() {}
