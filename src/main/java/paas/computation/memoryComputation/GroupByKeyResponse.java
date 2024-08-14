@@ -9,11 +9,11 @@ import java.util.List;
 
 public class GroupByKeyResponse extends Response {
     @JsonProperty("distributedDataset")
-    private List<String> distributedDataset;
+    private String distributedDataset;
 
     public GroupByKeyResponse() {}
 
-    public GroupByKeyResponse(int taskStatus, List<String> distributedDataset, int errorCode, String errorMsg){
+    public GroupByKeyResponse(int taskStatus, String distributedDataset, int errorCode, String errorMsg){
         super(taskStatus, errorCode, errorMsg);
         this.distributedDataset = distributedDataset;
     }
@@ -24,7 +24,7 @@ public class GroupByKeyResponse extends Response {
     }
 
 
-    public static GroupByKeyResponse getResponse(ErrorCodeEnum errorCodeEnum, List<String> distributedDataset){
+    public static GroupByKeyResponse getResponse(ErrorCodeEnum errorCodeEnum, String distributedDataset){
         if(errorCodeEnum == ErrorCodeEnum.SUCCESS){
             return new GroupByKeyResponse(
                     TASK_STATUS_SUCCESS,
@@ -50,6 +50,6 @@ public class GroupByKeyResponse extends Response {
     @Override
     public String toString() {
         return String.format("GroupByKeyResponse{taskStatus=%s, distributedDataset=%s, errorCode=%s, errorMsg=%s}",
-                this.getTaskStatus(), distributedDataset.toString(), this.getErrorCode(), this.getErrorMsg());
+                this.getTaskStatus(), distributedDataset, this.getErrorCode(), this.getErrorMsg());
     }
 }

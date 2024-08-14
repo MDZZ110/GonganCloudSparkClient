@@ -12,11 +12,11 @@ import java.util.List;
  */
 public class CollectResponse extends Response {
     @JsonProperty("result")
-    private List<Integer> result;
+    private List<?> result;
 
     public CollectResponse() {}
 
-    public CollectResponse(int taskStatus, List<Integer> result, int errorCode, String errorMsg){
+    public CollectResponse(int taskStatus, List<?> result, int errorCode, String errorMsg){
         super(taskStatus, errorCode, errorMsg);
         this.result = result;
     }
@@ -26,7 +26,7 @@ public class CollectResponse extends Response {
         return  mapper.readValue(json, CollectResponse.class);
     }
 
-    public static CollectResponse getResponse(ErrorCodeEnum errorCodeEnum, List<Integer> result){
+    public static CollectResponse getResponse(ErrorCodeEnum errorCodeEnum, List<?> result){
         if(errorCodeEnum == ErrorCodeEnum.SUCCESS){
             return new CollectResponse(
                     Response.TASK_STATUS_SUCCESS,
@@ -44,7 +44,7 @@ public class CollectResponse extends Response {
         );
     }
 
-    public List<Integer> getResult() {
+    public List<?> getResult() {
         return result;
     }
 

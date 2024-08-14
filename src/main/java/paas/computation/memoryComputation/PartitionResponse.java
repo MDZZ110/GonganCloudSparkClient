@@ -9,11 +9,11 @@ import java.util.List;
 
 public class PartitionResponse extends Response {
     @JsonProperty("distributedDataset")
-    private List<List<String>> distributedDataset;
+    private String distributedDataset;
 
     public PartitionResponse() {}
 
-    public PartitionResponse(int taskStatus, List<List<String>> distributedDataset, int errorCode, String errorMsg){
+    public PartitionResponse(int taskStatus, String distributedDataset, int errorCode, String errorMsg){
         super(taskStatus, errorCode, errorMsg);
         this.distributedDataset = distributedDataset;
     }
@@ -23,7 +23,7 @@ public class PartitionResponse extends Response {
         return  mapper.readValue(json, PartitionResponse.class);
     }
 
-    public static PartitionResponse getResponse(ErrorCodeEnum errorCodeEnum, List<List<String>> distributedDataset){
+    public static PartitionResponse getResponse(ErrorCodeEnum errorCodeEnum, String distributedDataset){
         if(errorCodeEnum == ErrorCodeEnum.SUCCESS){
             return new PartitionResponse(
                     Response.TASK_STATUS_SUCCESS,
@@ -49,6 +49,6 @@ public class PartitionResponse extends Response {
     @Override
     public String toString() {
         return String.format("PartitionResponse{taskStatus=%s, distributedDataset=%s, errorCode=%s, errorMsg=%s}",
-                this.getTaskStatus(), distributedDataset.toString(), this.getErrorCode(), this.getErrorMsg());
+                this.getTaskStatus(), distributedDataset, this.getErrorCode(), this.getErrorMsg());
     }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import paas.computation.memoryComputation.*;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,44 +22,81 @@ public class App
         String token = "INHUOPYHWNTDDMJVSWHN|BRXHHZqw07uhwhq3wDIjE09YnuywLW1QEBP9uVgM";
 
         token = "";
-        testCollect("gab1", token);
-
-        testCount(token);
-
-        testTake(token);
-
-
-        testSaveFile(token);
-
-        testMap(token);
-
-        testFilter(token);
-
-        testSample(token);
-
-        testUnion(token);
-        testCollect("union-gab1-gab2", token);
+//        tryToParseJson();
+//        return;
+//        testCollect("gab4", token);
 //
-        testIntersection(token);
-        testCollect("intersection-gab1-gab2", token);
+//        testCount(token);
 //
-        testDistinct(token);
+//        testTake(token);
+//        testCollect("take-gab1", token);
 //
-        testGroupByKey(token);
 //
-        testReduceByKey(token);
+//        testSaveFile(token);
 //
-        testSortByKey(token);
+//        testMap(token);
+//        testCollect("map-gab1", token);
 //
-        testJoin(token);
+//        testFilter(token);
+//        testCollect("filter-gab1", token);
 //
+//        testSample(token);
+//        testCollect("sample-gab1", token);
+//
+//        testUnion(token);
+//        testCollect("union-gab1-gab2", token);
+//
+//        testIntersection(token);
+//        testCollect("intersection-gab1-gab2", token);
+//
+//        testDistinct(token);
+//        testCollect("distinct-gab1", token);
+//
+//        testGroupByKey(token);
+//        testCollect("groupByKey-gab3", token);
+//
+//        testReduceByKey(token);
+//        testCollect("reduceByKey-gab3", token);
+//
+//        testSortByKey(token);
+//        testCollect("sortByKey-gab3", token);
+//
+//        testJoin(token);
+//        testCollect("join-gab3-gab4", token);
+
         testPartition(token);
+        testCollect("partition-gab3", token);
 
+//        testActionEntry(token);
+//
+//
+//        testTransformationEntry(token);
+    }
 
-        testActionEntry(token);
+    public static void tryToParseJson()  {
+        String tmpJson = "[1, 2, 3]";
+        ObjectMapper mapper = new ObjectMapper();
+        List<String> stringList;
+        List<Integer> intList;
+        try {
 
+            stringList = mapper.readValue(tmpJson, List.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("解析为 String 失败！");
+            return;
+        }
 
-        testTransformationEntry(token);
+        try {
+
+            intList = mapper.readValue(tmpJson, List.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("解析为 Int 失败！");
+            return;
+        }
+
+        System.out.println("都可以解析！！");
     }
 
     public static void printFailed(String message) {
@@ -76,7 +114,7 @@ public class App
             Method method = clazz.getMethod("collect", Object.class, String.class);
 
             CollectResponse resp = (CollectResponse) method.invoke(instance, dataName, token);
-            if (resp.getErrorCode() == 0) {
+            if ((resp.getErrorCode() == 0) && (!resp.getResult().isEmpty())) {
                 printFailed("testCollect Successfully!");
                 return true;
             }

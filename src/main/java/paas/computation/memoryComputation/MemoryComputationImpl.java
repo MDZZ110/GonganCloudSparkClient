@@ -25,7 +25,7 @@ public class MemoryComputationImpl implements MemoryComputation{
                 .writeTimeout(300, TimeUnit.SECONDS)
                 .build();
         MediaType typeJson = MediaType.parse("application/json; charset=utf-8");
-        String url = "http://157.208.10.52:7379/" + apiPath;
+        String url = CommonUtil.REMOTE_SERVER + apiPath;
         RequestBody body = RequestBody.create(typeJson, contentJson);
         Request request = new Request.Builder().url(url).post(body).build();
         okhttp3.Response response = httpClient.newCall(request).execute();

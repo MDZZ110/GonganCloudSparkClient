@@ -9,11 +9,11 @@ import java.util.List;
 
 public class MapResponse extends Response {
     @JsonProperty("distributedDataset")
-    private List<Integer> distributedDataset;
+    private String distributedDataset;
 
     public MapResponse() {}
 
-    public MapResponse(int taskStatus, List<Integer> distributedDataset, int errorCode, String errorMsg){
+    public MapResponse(int taskStatus, String distributedDataset, int errorCode, String errorMsg){
         super(taskStatus, errorCode, errorMsg);
         this.distributedDataset = distributedDataset;
     }
@@ -23,7 +23,7 @@ public class MapResponse extends Response {
         return  mapper.readValue(json, MapResponse.class);
     }
 
-    public static MapResponse getResponse(ErrorCodeEnum errorCodeEnum, List<Integer> distributedDataset){
+    public static MapResponse getResponse(ErrorCodeEnum errorCodeEnum, String distributedDataset){
         if(errorCodeEnum == ErrorCodeEnum.SUCCESS){
             return new MapResponse(
                     Response.TASK_STATUS_SUCCESS,

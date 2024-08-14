@@ -9,11 +9,11 @@ import java.util.List;
 
 public class SortByKeyResponse extends Response {
     @JsonProperty("distributedDataset")
-    private List<String> distributedDataset;
+    private String distributedDataset;
 
     public SortByKeyResponse() {}
 
-    public SortByKeyResponse(int taskStatus, List<String> distributedDataset, int errorCode, String errorMsg){
+    public SortByKeyResponse(int taskStatus, String distributedDataset, int errorCode, String errorMsg){
         super(taskStatus, errorCode, errorMsg);
         this.distributedDataset = distributedDataset;
     }
@@ -23,7 +23,7 @@ public class SortByKeyResponse extends Response {
         return  mapper.readValue(json, SortByKeyResponse.class);
     }
 
-    public static SortByKeyResponse getResponse(ErrorCodeEnum errorCodeEnum, List<String> distributedDataset){
+    public static SortByKeyResponse getResponse(ErrorCodeEnum errorCodeEnum, String distributedDataset){
         if(errorCodeEnum == ErrorCodeEnum.SUCCESS){
             return new SortByKeyResponse(
                     Response.TASK_STATUS_SUCCESS,
@@ -49,6 +49,6 @@ public class SortByKeyResponse extends Response {
     @Override
     public String toString() {
         return String.format("SortByKeyResponse{taskStatus=%s, distributedDataset=%s, errorCode=%s, errorMsg=%s}",
-                this.getTaskStatus(), distributedDataset.toString(), this.getErrorCode(), this.getErrorMsg());
+                this.getTaskStatus(), distributedDataset, this.getErrorCode(), this.getErrorMsg());
     }
 }

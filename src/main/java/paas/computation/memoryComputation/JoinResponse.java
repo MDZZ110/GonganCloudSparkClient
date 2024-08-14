@@ -9,11 +9,11 @@ import java.util.List;
 
 public class JoinResponse extends Response {
     @JsonProperty("distributedDataset")
-    private List<String> distributedDataset;
+    private String distributedDataset;
 
     public JoinResponse() {}
 
-    public JoinResponse(int taskStatus, List<String> distributedDataset, int errorCode, String errorMsg){
+    public JoinResponse(int taskStatus, String distributedDataset, int errorCode, String errorMsg){
         super(taskStatus, errorCode, errorMsg);
         this.distributedDataset = distributedDataset;
     }
@@ -23,7 +23,7 @@ public class JoinResponse extends Response {
         return  mapper.readValue(json, JoinResponse.class);
     }
 
-    public static JoinResponse getResponse(ErrorCodeEnum errorCodeEnum, List<String> distributedDataset){
+    public static JoinResponse getResponse(ErrorCodeEnum errorCodeEnum, String distributedDataset){
         if(errorCodeEnum == ErrorCodeEnum.SUCCESS){
             return new JoinResponse(
                     Response.TASK_STATUS_SUCCESS,
@@ -49,6 +49,6 @@ public class JoinResponse extends Response {
     @Override
     public String toString() {
         return String.format("JoinResponse{taskStatus=%s, distributedDataset=%s, errorCode=%s, errorMsg=%s}",
-                this.getTaskStatus(), distributedDataset.toString(), this.getErrorCode(), this.getErrorMsg());
+                this.getTaskStatus(), distributedDataset, this.getErrorCode(), this.getErrorMsg());
     }
 }

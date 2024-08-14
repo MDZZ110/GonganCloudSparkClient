@@ -3,24 +3,17 @@ package paas.computation.memoryComputation;
 import com.qingcloud.sdk.config.EnvContext;
 import com.qingcloud.sdk.exception.QCException;
 import com.qingcloud.sdk.service.TagService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by chenzheng on 2021/2/2.
  */
 public class CommonUtil {
-    public static String convertListToString(List<String> dataList) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(dataList);
-    }
-
+    public static String REMOTE_SERVER = "http://157.208.10.52:7379/";
+//    public static String REMOTE_SERVER = "http://192.168.110.9:7379/";
     public static boolean validateUserIdentity(String accessToken){
         // TODO: testing!
         if (accessToken == ""){

@@ -9,11 +9,11 @@ import java.util.List;
 
 public class FilterResponse extends Response {
     @JsonProperty("distributedDataset")
-    private List<Integer> distributedDataset;
+    private String distributedDataset;
 
     public FilterResponse() {}
 
-    public FilterResponse(int taskStatus, List<Integer> distributedDataset, int errorCode, String errorMsg){
+    public FilterResponse(int taskStatus, String distributedDataset, int errorCode, String errorMsg){
         super(taskStatus, errorCode, errorMsg);
         this.distributedDataset = distributedDataset;
     }
@@ -23,7 +23,7 @@ public class FilterResponse extends Response {
         return  mapper.readValue(json, FilterResponse.class);
     }
 
-    public static FilterResponse getResponse(ErrorCodeEnum errorCodeEnum, List<Integer> distributedDataset){
+    public static FilterResponse getResponse(ErrorCodeEnum errorCodeEnum, String distributedDataset){
         if(errorCodeEnum == ErrorCodeEnum.SUCCESS){
             return new FilterResponse(
                     Response.TASK_STATUS_SUCCESS,
@@ -41,13 +41,13 @@ public class FilterResponse extends Response {
         );
     }
 
-    public Object getDistributedDataset() {
+    public String getDistributedDataset() {
         return distributedDataset;
     }
 
     @Override
     public String toString() {
         return String.format("FilterResponse{taskStatus=%s, distributedDataset=%s, errorCode=%s, errorMsg=%s}",
-                this.getTaskStatus(), distributedDataset.toString(), this.getErrorCode(), this.getErrorMsg());
+                this.getTaskStatus(), distributedDataset, this.getErrorCode(), this.getErrorMsg());
     }
 }

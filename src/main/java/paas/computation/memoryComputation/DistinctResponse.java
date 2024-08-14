@@ -8,11 +8,11 @@ import java.io.IOException;
 
 public class DistinctResponse extends Response {
     @JsonProperty("distributedDataset")
-    private Object distributedDataset;
+    private String distributedDataset;
 
     public DistinctResponse() {}
 
-    public DistinctResponse(int taskStatus, Object distributedDataset, int errorCode, String errorMsg){
+    public DistinctResponse(int taskStatus, String distributedDataset, int errorCode, String errorMsg){
         super(taskStatus, errorCode, errorMsg);
         this.distributedDataset = distributedDataset;
     }
@@ -22,7 +22,7 @@ public class DistinctResponse extends Response {
         return  mapper.readValue(json, DistinctResponse.class);
     }
 
-    public static DistinctResponse getResponse(ErrorCodeEnum errorCodeEnum, Object distributedDataset){
+    public static DistinctResponse getResponse(ErrorCodeEnum errorCodeEnum, String distributedDataset){
         if(errorCodeEnum == ErrorCodeEnum.SUCCESS){
             return new DistinctResponse(
                     TASK_STATUS_SUCCESS,
@@ -47,6 +47,6 @@ public class DistinctResponse extends Response {
     @Override
     public String toString() {
         return String.format("DistinctResponse{taskStatus=%s, distributedDataset=%s, errorCode=%s, errorMsg=%s}",
-                this.getTaskStatus(), distributedDataset.toString(), this.getErrorCode(), this.getErrorMsg());
+                this.getTaskStatus(), distributedDataset, this.getErrorCode(), this.getErrorMsg());
     }
 }
