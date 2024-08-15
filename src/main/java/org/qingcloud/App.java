@@ -24,13 +24,13 @@ public class App
         token = "";
 //        tryToParseJson();
 //        return;
-//        testCollect("gab4", token);
-//
-//        testCount(token);
-//
-//        testTake(token);
-//        testCollect("take-gab1", token);
-//
+        testCollect("gab4", token);
+
+        testCount(token);
+
+        testTake(token);
+        testCollect("take-gab1", token);
+
 //
 //        testSaveFile(token);
 //
