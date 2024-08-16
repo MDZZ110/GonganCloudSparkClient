@@ -4,9 +4,16 @@ import com.qingcloud.sdk.config.EnvContext;
 import com.qingcloud.sdk.exception.QCException;
 import com.qingcloud.sdk.service.TagService;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by chenzheng on 2021/2/2.
@@ -61,6 +68,20 @@ public class CommonUtil {
         }
 
         return true;
+    }
+
+    public static void writeDataToLocalFile(String localFilePath, List<?> dataList) throws IOException {
+        Path path = Paths.get(localFilePath);
+        Files.createDirectories(path.getParent());
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(localFilePath))) { // true表示追加模式，如果不需要追加则设为false或省略
+            for (Object number : dataList) {
+                writer.write(number.toString()); // 将Integer转换为String并写入
+                writer.newLine(); // 写入新行
+            }
+            writer.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static boolean valiateStringType(Object param, int minLength, int maxLength){

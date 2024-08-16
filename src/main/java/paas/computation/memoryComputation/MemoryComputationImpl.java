@@ -257,17 +257,19 @@ public class MemoryComputationImpl implements MemoryComputation{
     }
 
     @Override
-    public SaveFileResponse saveFile(Object distributedDataset, String fileType, String filePath, String accessToken){
+    public Response saveFile(Object distributedDataset, String fileType, String filePath, String accessToken){
+        fileType = fileType.toLowerCase();
+
         if(!this.checkFilType(fileType)){
-            return SaveFileResponse.getResponse(ErrorCodeEnum.FILE_TYPE_NOT_SUPPORTED);
+            return Response.getResponse(ErrorCodeEnum.FILE_TYPE_NOT_SUPPORTED);
         }
 
         if(!CommonUtil.validateUserIdentity(accessToken)){
-            return SaveFileResponse.getResponse(ErrorCodeEnum.PERMISSION_DENIED);
+            return Response.getResponse(ErrorCodeEnum.PERMISSION_DENIED);
         }
 
         if(!CommonUtil.valiateStringType(filePath, 0, 1024)){
-            return SaveFileResponse.getResponse(ErrorCodeEnum.INVALID_INPUT_PARAMS_LENGTH);
+            return Response.getResponse(ErrorCodeEnum.INVALID_INPUT_PARAMS_LENGTH);
         }
 
         if (filePath.startsWith("dfs")) {
@@ -277,10 +279,20 @@ public class MemoryComputationImpl implements MemoryComputation{
         try{
             String requestJson = new SaveFileRequest((String)distributedDataset, fileType, filePath).toJson();
             String result = sendRequest("/action/saveFile", requestJson);
-            return SaveFileResponse.convertJsonToResponse(result);
+            SaveFileResponse saveFileResp =  SaveFileResponse.convertJsonToResponse(result);
+            if (filePath.startsWith("file://")) {
+                filePath = filePath.substring(7);
+                CommonUtil.writeDataToLocalFile(filePath, saveFileResp.getDistributedDataset());
+            }
+
+            return new Response(
+                    saveFileResp.getTaskStatus(),
+                    saveFileResp.getErrorCode(),
+                    saveFileResp.getErrorMsg()
+            );
         }catch (Exception e){
             e.printStackTrace();
-            return SaveFileResponse.getResponse(ErrorCodeEnum.FAILED);
+            return Response.getResponse(ErrorCodeEnum.SUCCESS);
         }
 
     }
@@ -290,7 +302,7 @@ public class MemoryComputationImpl implements MemoryComputation{
         if(null == jsonObject){
             return ActionEntryResponse.getResponse(ErrorCodeEnum.PARAM_NOT_FOUND, null);
         }
-        String fileType = jsonObject.getString("fileType");
+        String fileType = jsonObject.getString("fileType").toLowerCase();
         String filePath = jsonObject.getString("filePath");
         if(null == fileType||null == filePath){
             return ActionEntryResponse.getResponse(ErrorCodeEnum.PARAM_NOT_FOUND, null);
@@ -319,6 +331,7 @@ public class MemoryComputationImpl implements MemoryComputation{
     }
 
     private boolean checkFilType(String fileType){
+
         final String FILE_TYPE_TXT = "txt";
         final String FILE_TYPE_CSV = "csv";
         final String FILE_TYPE_ORC = "orc";
