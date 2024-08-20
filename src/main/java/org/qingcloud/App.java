@@ -25,53 +25,53 @@ public class App
         token = "";
 //        tryToParseJson();
 //        return;
-//        testCollect("gab4", token);
+        testCollect("gab4", token);
 
-//        testCount(token);
+        testCount(token);
 
-//        testTake(token);
-//        testCollect("take-gab1", token);
+        testTake(token);
+        testCollect("take-gab1", token);
 
-//
-//        testSaveFile(token);
-//
-//        testMap(token);
-//        testCollect("map-gab1", token);
-//
-//        testFilter(token);
-//        testCollect("filter-gab1", token);
-//
-//        testSample(token);
-//        testCollect("sample-gab1", token);
-//
-//        testUnion(token);
-//        testCollect("union-gab1-gab2", token);
-//
-//        testIntersection(token);
-//        testCollect("intersection-gab1-gab2", token);
-//
-//        testDistinct(token);
-//        testCollect("distinct-gab1", token);
-//
-//        testGroupByKey(token);
-//        testCollect("groupByKey-gab4", token);
-//
-//        testReduceByKey(token);
-//        testCollect("reduceByKey-gab4", token);
-//
-//        testSortByKey(token);
-//        testCollect("sortByKey-gab4", token);
-//
-//        testJoin(token);
-//        testCollect("join-gab4-gab4", token);
-//
-//        testPartition(token);
-//        testCollect("partition-gab4", token);
 
-        testActionEntry(token);
-//
-//
-//        testTransformationEntry(token);
+        testSaveFile(token);
+
+        testMap(token);
+        testCollect("map-gab1", token);
+
+        testFilter(token);
+        testCollect("filter-gab1", token);
+
+        testSample(token);
+        testCollect("sample-gab1", token);
+
+        testUnion(token);
+        testCollect("union-gab1-gab2", token);
+
+        testIntersection(token);
+        testCollect("intersection-gab1-gab2", token);
+
+        testDistinct(token);
+        testCollect("distinct-gab1", token);
+
+        testGroupByKey(token);
+        testCollect("groupByKey-gab4", token);
+
+        testReduceByKey(token);
+        testCollect("reduceByKey-gab4", token);
+
+        testSortByKey(token);
+        testCollect("sortByKey-gab4", token);
+
+        testJoin(token);
+        testCollect("join-gab4-gab4", token);
+
+        testPartition(token);
+        testCollect("partition-gab4", token);
+
+        testActionEntry(args[0], token);
+
+
+        testTransformationEntry(token);
     }
 
     public static void tryToParseJson()  {
@@ -311,30 +311,31 @@ public class App
         return false;
     }
 
-    public static Boolean testActionEntry(String token) {
-        ActionEntryResponse resp = new MemoryComputationImpl().actionEntry("gab1", 1, "", token);
-        if (resp.getErrorCode() != 0) {
-            printFailed("testActionEntry Collect failed");
-            return false;
-        }
+    public static Boolean testActionEntry(String params, String token) {
+//        ActionEntryResponse resp = new MemoryComputationImpl().actionEntry("gab1", 1, "", token);
+//        if (resp.getErrorCode() != 0) {
+//            printFailed("testActionEntry Collect failed");
+//            return false;
+//        }
+//
+//        printFailed("testActionEntry Collect Successfully!");
+//
+//        resp = new MemoryComputationImpl().actionEntry("gab1", 2, "", token);
+//        if (resp.getErrorCode() != 0) {
+//            printFailed("testActionEntry Count failed");
+//            return false;
+//        }
+//
+//        printFailed("testActionEntry Count Successfully!");
 
-        printFailed("testActionEntry Collect Successfully!");
-
-        resp = new MemoryComputationImpl().actionEntry("gab1", 2, "", token);
-        if (resp.getErrorCode() != 0) {
-            printFailed("testActionEntry Count failed");
-            return false;
-        }
-
-        printFailed("testActionEntry Count Successfully!");
-
-        String takeParameter = "{\"amount\":3}";
-        resp = new MemoryComputationImpl().actionEntry("gab1", 3, takeParameter, token);
-        if (resp.getErrorCode() != 0) {
+//        String takeParameter = "{\"amount\":3}";
+        ActionEntryResponse resp = new MemoryComputationImpl().actionEntry("gab1", 3, params, token);
+        if (resp.getErrorCode() != 0 || resp.getTaskStatus() != 1) {
             printFailed("testActionEntry Take failed");
             return false;
         }
 
+        System.out.println(resp.getDistributedDataset());
         printFailed("testActionEntry Take Successfully!");
 
         List<String> fileTypeList = Arrays.asList("txt", "csv", "json", "parquet", "orc");
@@ -346,7 +347,7 @@ public class App
 
             String localSaveFileParameter = String.format("{\"fileType\": \"%s\", \"filePath\": \"%s\"}", fileTypeName, localFilePath);
             resp = new MemoryComputationImpl().actionEntry("gab3", 4, localSaveFileParameter, token);
-            if (resp.getErrorCode() != 0) {
+            if (resp.getErrorCode() != 0 || resp.getTaskStatus() != 1) {
                 printFailed("testActionEntry saveFile local failed");
                 return false;
             }

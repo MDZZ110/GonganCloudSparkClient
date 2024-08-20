@@ -13,6 +13,10 @@ public class ActionEntryResponse extends Response {
         this.distributedDataset = distributedDataset;
     }
 
+    public Object getDistributedDataset() {
+        return distributedDataset;
+    }
+
     public static ActionEntryResponse getResponse(ErrorCodeEnum errorCodeEnum, Object distributedDataset){
         if(errorCodeEnum == ErrorCodeEnum.SUCCESS){
             return new ActionEntryResponse(

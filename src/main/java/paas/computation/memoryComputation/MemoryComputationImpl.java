@@ -64,16 +64,16 @@ public class MemoryComputationImpl implements MemoryComputation{
 
         switch (function){
             case ACTION_METHOD_COLLECT:
-                result = this.collect(distributedDataset, parameterList, accessToken);
+                result = this.actionCollect(distributedDataset, parameterList, accessToken);
                 break;
             case ACTION_METHOD_COUNT:
-                result = this.count(distributedDataset, parameterList, accessToken);
+                result = this.actionCount(distributedDataset, parameterList, accessToken);
                 break;
             case ACTION_METHOD_TAKE:
-                result = this.take(distributedDataset, parameterList, accessToken);
+                result = this.actionTake(distributedDataset, parameterList, accessToken);
                 break;
             case ACTION_METHOD_SAVE_FILE:
-                result = this.saveFile(distributedDataset, parameterList, accessToken);
+                result = this.actionSaveFile(distributedDataset, parameterList, accessToken);
                 break;
         }
 
@@ -167,7 +167,7 @@ public class MemoryComputationImpl implements MemoryComputation{
         return result;
     }
 
-    private ActionEntryResponse collect(Object distributedDataset, String parameterList, String accessToken){
+    private ActionEntryResponse actionCollect(Object distributedDataset, String parameterList, String accessToken){
         CollectResponse resp = this.collect(distributedDataset, accessToken);
         return new ActionEntryResponse(
                 resp.getTaskStatus(),
@@ -209,7 +209,7 @@ public class MemoryComputationImpl implements MemoryComputation{
         }
     }
 
-    private ActionEntryResponse count(Object distributedDataset, String parameterList, String accessToken){
+    private ActionEntryResponse actionCount(Object distributedDataset, String parameterList, String accessToken){
         CountResponse resp = this.count(distributedDataset, accessToken);
         return new ActionEntryResponse(
                 resp.getTaskStatus(),
@@ -236,7 +236,7 @@ public class MemoryComputationImpl implements MemoryComputation{
 
     }
 
-    private ActionEntryResponse take(Object distributedDataset, String parameterList, String accessToken){
+    private ActionEntryResponse actionTake(Object distributedDataset, String parameterList, String accessToken){
         JSONObject jsonObject = JSON.parseObject(parameterList);
         if(null == jsonObject){
             return ActionEntryResponse.getResponse(ErrorCodeEnum.PARAM_NOT_FOUND, null);
@@ -297,7 +297,7 @@ public class MemoryComputationImpl implements MemoryComputation{
 
     }
 
-    private ActionEntryResponse saveFile(Object distributedDataset, String parameterList, String accessToken){
+    private ActionEntryResponse actionSaveFile(Object distributedDataset, String parameterList, String accessToken){
         JSONObject jsonObject = JSON.parseObject(parameterList);
         if(null == jsonObject){
             return ActionEntryResponse.getResponse(ErrorCodeEnum.PARAM_NOT_FOUND, null);
