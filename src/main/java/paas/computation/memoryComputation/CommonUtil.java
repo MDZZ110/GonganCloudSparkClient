@@ -19,8 +19,14 @@ import java.util.List;
  * Created by chenzheng on 2021/2/2.
  */
 public class CommonUtil {
-//    public static String REMOTE_SERVER = "http://157.208.10.52:7379/";
-    public static String REMOTE_SERVER = "http://192.168.110.9:7379/";
+    public static String getRemoteServer() {
+        String DEPLOY_ENV = System.getenv("DEPLOY");
+        if (DEPLOY_ENV == null || DEPLOY_ENV.isEmpty() || !DEPLOY_ENV.equals("dev")) {
+            return "http://157.208.10.52:7379/";
+        } else {
+            return "http://192.168.110.9:7379/";
+        }
+    }
     public static boolean validateUserIdentity(String accessToken){
         // TODO: testing!
         if (accessToken == ""){
