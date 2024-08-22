@@ -28,6 +28,10 @@ public class Response {
         this.errorMsg = errorMsg;
     }
 
+    public void setTaskStatus(int taskStatus) {
+        this.taskStatus = taskStatus;
+    }
+
     public int getTaskStatus() {
         return taskStatus;
     }

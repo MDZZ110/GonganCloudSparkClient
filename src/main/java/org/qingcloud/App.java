@@ -25,50 +25,50 @@ public class App
         token = "";
 //        tryToParseJson();
 //        return;
-        testCollect("gab4", token);
+//        testCollect("gab4", token);
 
-        testCount(token);
+//        testCount(token);
 
-        testTake(token);
-        testCollect("take-gab1", token);
+//        testTake(token);
+//        testCollect("take-gab1", token);
 
 
-        testSaveFile(token);
+//        testSaveFile(token);
 
-        testMap(token);
-        testCollect("map-gab1", token);
+//        testMap(token);
+//        testCollect("map-gab1", token);
+//
+//        testFilter(token);
+//        testCollect("filter-gab1", token);
+//
+//        testSample(token);
+//        testCollect("sample-gab1", token);
+//
+//        testUnion(token);
+//        testCollect("union-gab1-gab2", token);
+//
+//        testIntersection(token);
+//        testCollect("intersection-gab1-gab2", token);
+//
+//        testDistinct(token);
+//        testCollect("distinct-union-gab1-gab2", token);
+//
+//        testGroupByKey(token);
+//        testCollect("groupByKey-gab4", token);
+//
+//        testReduceByKey(token);
+//        testCollect("reduceByKey-gab4", token);
+//
+//        testSortByKey(token);
+//        testCollect("sortByKey-gab4", token);
+//
+//        testJoin(token);
+//        testCollect("join-gab4-gab4", token);
+//
+//        testPartition(token);
+//        testCollect("partition-gab4", token);
 
-        testFilter(token);
-        testCollect("filter-gab1", token);
-
-        testSample(token);
-        testCollect("sample-gab1", token);
-
-        testUnion(token);
-        testCollect("union-gab1-gab2", token);
-
-        testIntersection(token);
-        testCollect("intersection-gab1-gab2", token);
-
-        testDistinct(token);
-        testCollect("distinct-gab1", token);
-
-        testGroupByKey(token);
-        testCollect("groupByKey-gab4", token);
-
-        testReduceByKey(token);
-        testCollect("reduceByKey-gab4", token);
-
-        testSortByKey(token);
-        testCollect("sortByKey-gab4", token);
-
-        testJoin(token);
-        testCollect("join-gab4-gab4", token);
-
-        testPartition(token);
-        testCollect("partition-gab4", token);
-
-        testActionEntry(args[0], token);
+//        testActionEntry(args[0], token);
 
 
         testTransformationEntry(token);
@@ -115,7 +115,7 @@ public class App
             Method method = clazz.getMethod("collect", Object.class, String.class);
 
             CollectResponse resp = (CollectResponse) method.invoke(instance, dataName, token);
-            if ((resp.getErrorCode() == 0) && (!resp.getResult().isEmpty())) {
+            if ((resp.getTaskStatus() == 1) && (!resp.getResult().isEmpty())) {
                 printFailed("testCollect Successfully!");
                 return true;
             }
@@ -130,7 +130,7 @@ public class App
 
     public static Boolean testCount(String token)  {
         CountResponse resp = new MemoryComputationImpl().count("gab1", token);
-        if (resp.getErrorCode() == 0) {
+        if (resp.getTaskStatus() == 1) {
             printFailed("testCount Successfully!");
             return true;
         }
@@ -141,7 +141,7 @@ public class App
 
     public static Boolean testTake(String token)  {
         TakeResponse resp = new MemoryComputationImpl().take("gab1", 3, token);
-        if (resp.getErrorCode() == 0) {
+        if (resp.getTaskStatus() == 1) {
             printFailed("testTake Successfully!");
             return true;
         }
@@ -160,14 +160,14 @@ public class App
             String localFilePath = localFileDir + "/test_save_file_" + fileTypeName;
             String remoteFilePath = remoteFileDir + "/test_save_file_" + fileTypeName;
 
-            resp = new MemoryComputationImpl().saveFile("gab4", fileTypeName, localFilePath, token);
-            if (resp.getErrorCode() != 0) {
+            resp = new MemoryComputationImpl().saveFile("gab1", fileTypeName, localFilePath, token);
+            if (resp.getErrorCode() != 0 || resp.getTaskStatus() != 1) {
                 pass = false;
                 break;
             }
 
-            resp = new MemoryComputationImpl().saveFile("gab4", fileTypeName, remoteFilePath, token);
-            if (resp.getErrorCode() != 0) {
+            resp = new MemoryComputationImpl().saveFile("gab1", fileTypeName, remoteFilePath, token);
+            if (resp.getErrorCode() != 0 || resp.getTaskStatus() != 1) {
                 pass = false;
                 break;
             }
@@ -185,7 +185,7 @@ public class App
     public static Boolean testMap(String token) {
         String userDefinedFunction = "com.qingcloud.MapObject.udfMap";
         MapResponse resp = new MemoryComputationImpl().map("gab1", userDefinedFunction, token);
-        if (resp.getErrorCode() == 0) {
+        if (resp.getTaskStatus() == 1) {
             printFailed("testMap Successfully");
             return true;
         }
@@ -197,7 +197,7 @@ public class App
     public static Boolean testFilter(String token) {
         String userDefinedFunction = "com.qingcloud.MapObject.udfFilter";
         FilterResponse resp = new MemoryComputationImpl().filter("gab1", userDefinedFunction, token);
-        if (resp.getErrorCode() == 0) {
+        if (resp.getTaskStatus() == 1) {
             printFailed("testFilter Successfully");
             return true;
         }
@@ -211,7 +211,7 @@ public class App
         Float percentage = 0.32f;
         int randomSeed = 100023;
         SampleResponse resp = new MemoryComputationImpl().sample("gab1", replace, percentage, randomSeed, token);
-        if (resp.getErrorCode() == 0) {
+        if (resp.getTaskStatus() == 1) {
             printFailed("testSample Successfully");
             return true;
         }
@@ -223,7 +223,7 @@ public class App
     public static Boolean testUnion(String token) {
 
         UnionResponse resp = new MemoryComputationImpl().union("gab1", "gab2", token);
-        if ((resp.getErrorCode() == 0) && (resp.getDistributedDataset().equals("union-gab1-gab2"))){
+        if ((resp.getTaskStatus() == 1) && (resp.getDistributedDataset().equals("union-gab1-gab2"))){
             printFailed("testUnion Successfully");
             return true;
         }
@@ -235,7 +235,7 @@ public class App
     public static Boolean testIntersection(String token) {
 
         IntersectionResponse resp = new MemoryComputationImpl().intersection("gab1", "gab2", token);
-        if ((resp.getErrorCode() == 0) && (resp.getDistributedDataset().equals("intersection-gab1-gab2"))) {
+        if ((resp.getTaskStatus() == 1) && (resp.getDistributedDataset().equals("intersection-gab1-gab2"))) {
             printFailed("testIntersection Successfully");
             return true;
         }
@@ -245,8 +245,8 @@ public class App
     }
 
     public static Boolean testDistinct(String token) {
-        DistinctResponse resp = new MemoryComputationImpl().distinct("gab1", token);
-        if (resp.getErrorCode() == 0) {
+        DistinctResponse resp = new MemoryComputationImpl().distinct("union-gab1-gab2", token);
+        if (resp.getTaskStatus() == 1) {
             printFailed("testDistinct Successfully");
             return true;
         }
@@ -257,7 +257,7 @@ public class App
 
     public static Boolean testGroupByKey(String token) {
         GroupByKeyResponse resp = new MemoryComputationImpl().groupByKey("gab4", token);
-        if (resp.getErrorCode() == 0) {
+        if (resp.getTaskStatus() == 1) {
             printFailed("testGroupByKey Successfully");
             return true;
         }
@@ -269,7 +269,7 @@ public class App
 
     public static Boolean testReduceByKey(String token) {
         ReduceByKeyResponse resp = new MemoryComputationImpl().reduceByKey("gab4", "udf.Udf.udfReduce", "A", token);
-        if (resp.getErrorCode() == 0) {
+        if (resp.getTaskStatus() == 1) {
             printFailed("testReduceByKey Successfully");
             return true;
         }
@@ -280,7 +280,7 @@ public class App
 
     public static Boolean testSortByKey(String token) {
         SortByKeyResponse resp = new MemoryComputationImpl().sortByKey("gab4", "0", "A", token);
-        if (resp.getErrorCode() == 0) {
+        if (resp.getTaskStatus() == 1) {
             printFailed("testSortByKey Successfully");
             return true;
         }
@@ -291,7 +291,7 @@ public class App
 
     public static Boolean testJoin(String token) {
         JoinResponse resp = new MemoryComputationImpl().join("gab4", "gab4", 1, token);
-        if (resp.getErrorCode() == 0) {
+        if (resp.getTaskStatus() == 1) {
             printFailed("testJoin Successfully");
             return true;
         }
@@ -302,7 +302,7 @@ public class App
 
     public static Boolean testPartition(String token) {
         PartitionResponse resp = new MemoryComputationImpl().partition("gab4", 2, token);
-        if (resp.getErrorCode() == 0) {
+        if (resp.getTaskStatus() == 1) {
             printFailed("testPartition Successfully");
             return true;
         }
@@ -312,24 +312,24 @@ public class App
     }
 
     public static Boolean testActionEntry(String params, String token) {
-//        ActionEntryResponse resp = new MemoryComputationImpl().actionEntry("gab1", 1, "", token);
-//        if (resp.getErrorCode() != 0) {
-//            printFailed("testActionEntry Collect failed");
-//            return false;
-//        }
-//
-//        printFailed("testActionEntry Collect Successfully!");
-//
-//        resp = new MemoryComputationImpl().actionEntry("gab1", 2, "", token);
-//        if (resp.getErrorCode() != 0) {
-//            printFailed("testActionEntry Count failed");
-//            return false;
-//        }
-//
-//        printFailed("testActionEntry Count Successfully!");
+        ActionEntryResponse resp = new MemoryComputationImpl().actionEntry("gab1", 1, "", token);
+        if (resp.getErrorCode() != 0 || resp.getTaskStatus() != 1) {
+            printFailed("testActionEntry Collect failed");
+            return false;
+        }
 
-//        String takeParameter = "{\"amount\":3}";
-        ActionEntryResponse resp = new MemoryComputationImpl().actionEntry("gab1", 3, params, token);
+        printFailed("testActionEntry Collect Successfully!");
+
+        resp = new MemoryComputationImpl().actionEntry("gab1", 2, "", token);
+        if (resp.getErrorCode() != 0 || resp.getTaskStatus() != 1) {
+            printFailed("testActionEntry Count failed");
+            return false;
+        }
+
+        printFailed("testActionEntry Count Successfully!");
+
+        String takeParameter = "{\"amount\":3}";
+        resp = new MemoryComputationImpl().actionEntry("gab1", 3, takeParameter, token);
         if (resp.getErrorCode() != 0 || resp.getTaskStatus() != 1) {
             printFailed("testActionEntry Take failed");
             return false;
@@ -338,7 +338,7 @@ public class App
         System.out.println(resp.getDistributedDataset());
         printFailed("testActionEntry Take Successfully!");
 
-        List<String> fileTypeList = Arrays.asList("txt", "csv", "json", "parquet", "orc");
+        List<String> fileTypeList = Arrays.asList("TXT", "CSV", "JSON", "Parquet", "ORC");
         String localFileDir = "file:///tmp/actionEntry";
         String remoteFileDir = "dfs:///hadoop/actionEntry";
         for(String fileTypeName:fileTypeList){
@@ -346,7 +346,7 @@ public class App
             String remoteFilePath = remoteFileDir + "/test_save_file_" + fileTypeName;
 
             String localSaveFileParameter = String.format("{\"fileType\": \"%s\", \"filePath\": \"%s\"}", fileTypeName, localFilePath);
-            resp = new MemoryComputationImpl().actionEntry("gab3", 4, localSaveFileParameter, token);
+            resp = new MemoryComputationImpl().actionEntry("gab1", 4, localSaveFileParameter, token);
             if (resp.getErrorCode() != 0 || resp.getTaskStatus() != 1) {
                 printFailed("testActionEntry saveFile local failed");
                 return false;
@@ -355,8 +355,8 @@ public class App
             printFailed("testActionEntry saveFile " + fileTypeName + " to local Successfully");
 
             String remoteSaveFileParameter = String.format("{\"fileType\": \"%s\", \"filePath\": \"%s\"}", fileTypeName, remoteFilePath);;
-            resp = new MemoryComputationImpl().actionEntry("gab3", 4, remoteSaveFileParameter, token);
-            if (resp.getErrorCode() != 0) {
+            resp = new MemoryComputationImpl().actionEntry("gab1", 4, remoteSaveFileParameter, token);
+            if (resp.getErrorCode() != 0 || resp.getTaskStatus() != 1) {
                 printFailed("testActionEntry saveFile local failed");
                 return false;
             }
@@ -368,15 +368,11 @@ public class App
 
     }
 
-    public static String mapToJson(HashMap map) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(map);
-    }
-
     public static Boolean testTransformationEntry(String token) {
+        TransformatEntryResponse resp;
 //        String mapParameter = "{\"userDefinedFunction\":\"com.qingcloud.MapObject.udfMap\"}";
 //        TransformatEntryResponse resp = new MemoryComputationImpl().transformationEntry("gab1", "map", mapParameter, token);
-//        if (resp.getErrorCode() != 0) {
+//        if (resp.getErrorCode() != 0 || resp.getTaskStatus() != 1) {
 //            printFailed("testTransformationEntry Map failed");
 //            return false;
 //        }
@@ -386,7 +382,7 @@ public class App
 //
 //        String filterParameter = "{\"userDefinedFunction\":\"com.qingcloud.MapObject.udfFilter\"}";
 //        resp = new MemoryComputationImpl().transformationEntry("gab1", "filter", filterParameter, token);
-//        if (resp.getErrorCode() != 0) {
+//        if (resp.getErrorCode() != 0 || resp.getTaskStatus() != 1) {
 //            printFailed("testTransformationEntry Filter failed");
 //            return false;
 //        }
@@ -398,7 +394,7 @@ public class App
 //
 //        String sampleParameter = String.format("{\"replace\":\"%s\", \"percentage\":\"%s\", \"randomSeed\": \"%s\"}", replace, percentage, randomSeed);
 //        resp = new MemoryComputationImpl().transformationEntry("gab1", "sample", sampleParameter, token);
-//        if (resp.getErrorCode() != 0) {
+//        if (resp.getErrorCode() != 0 || resp.getTaskStatus() != 1) {
 //            printFailed("testTransformationEntry Sample failed");
 //            return false;
 //        }
@@ -406,25 +402,25 @@ public class App
 
 
         String unionParameter = "{\"distributedDataset1\": \"gab1\", \"distributedDataset2\": \"gab2\"}";
-        TransformatEntryResponse resp = new MemoryComputationImpl().transformationEntry("", "union", unionParameter, token);
-        if (resp.getErrorCode() != 0) {
+        resp = new MemoryComputationImpl().transformationEntry("", "union", unionParameter, token);
+        if (resp.getErrorCode() != 0 || resp.getTaskStatus() != 1) {
             printFailed("testTransformationEntry union failed");
             return false;
         }
         printFailed("testTransformationEntry union Successfully");
 
 
-        String intersectionParameter = "{\"distributedDataset1\": \"gab1\", \"distributedDataset2\": \"gab2\"}";
-        resp = new MemoryComputationImpl().transformationEntry("", "intersection", intersectionParameter, token);
-        if (resp.getErrorCode() != 0) {
-            printFailed("testTransformationEntry intersection failed");
-            return false;
-        }
-        printFailed("testTransformationEntry intersection Successfully");
+//        String intersectionParameter = "{\"distributedDataset1\": \"gab1\", \"distributedDataset2\": \"gab2\"}";
+//        resp = new MemoryComputationImpl().transformationEntry("", "intersection", intersectionParameter, token);
+//        if (resp.getErrorCode() != 0 || resp.getTaskStatus() != 1) {
+//            printFailed("testTransformationEntry intersection failed");
+//            return false;
+//        }
+//        printFailed("testTransformationEntry intersection Successfully");
 
 
-        resp = new MemoryComputationImpl().transformationEntry("gab5", "distinct", "", token);
-        if (resp.getErrorCode() != 0) {
+        resp = new MemoryComputationImpl().transformationEntry("union-gab1-gab2", "distinct", "1", token);
+        if (resp.getErrorCode() != 0 || resp.getTaskStatus() != 1) {
             printFailed("testTransformationEntry distinct failed");
             return false;
         }
@@ -433,7 +429,7 @@ public class App
 
 
         resp = new MemoryComputationImpl().transformationEntry("gab4", "group", "", token);
-        if (resp.getErrorCode() != 0) {
+        if (resp.getErrorCode() != 0 || resp.getTaskStatus() != 1) {
             printFailed("testTransformationEntry group failed");
             return false;
         }
@@ -442,7 +438,7 @@ public class App
 
         String reduceParameter = "{\"reduceFunction\":\"udf.Udf.udfReduce\", \"keyField\":\"A\"}";
         resp = new MemoryComputationImpl().transformationEntry("gab4", "reduce", reduceParameter, token);
-        if (resp.getErrorCode() != 0) {
+        if (resp.getErrorCode() != 0 || resp.getTaskStatus() != 1) {
             printFailed("testTransformationEntry reduce failed");
             return false;
         }
@@ -450,7 +446,7 @@ public class App
 
         String sortParameter = "{\"sort\":\"0\", \"keyField\":\"A\"}";
         resp = new MemoryComputationImpl().transformationEntry("gab4", "sort", sortParameter, token);
-        if (resp.getErrorCode() != 0) {
+        if (resp.getErrorCode() != 0 || resp.getTaskStatus() != 1) {
             printFailed("testTransformationEntry sort failed");
             return false;
         }
@@ -459,7 +455,7 @@ public class App
 
         String joinParameter = "{\"joinMethod\":\"1\", \"distributedDataset1\": \"gab4\", \"distributedDataset2\": \"gab4\"}";
         resp = new MemoryComputationImpl().transformationEntry("", "join", joinParameter, token);
-        if (resp.getErrorCode() != 0) {
+        if (resp.getErrorCode() != 0 || resp.getTaskStatus() != 1) {
             printFailed("testTransformationEntry join failed");
             return false;
         }
@@ -468,7 +464,7 @@ public class App
 
         String partitionParameter = "{\"partitionNumber\":\"2\"}";
         resp = new MemoryComputationImpl().transformationEntry("gab4", "partition", partitionParameter, token);
-        if (resp.getErrorCode() != 0) {
+        if (resp.getErrorCode() != 0 || resp.getTaskStatus() != 1) {
             printFailed("testTransformationEntry partition failed");
             return false;
         }

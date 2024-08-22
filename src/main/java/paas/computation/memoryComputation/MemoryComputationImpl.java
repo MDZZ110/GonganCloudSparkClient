@@ -164,6 +164,10 @@ public class MemoryComputationImpl implements MemoryComputation{
                 break;
         }
 
+        if (result != null) {
+            result.setTaskStatus(Response.TASK_STATUS_SUCCESS);
+        }
+
         return result;
     }
 
